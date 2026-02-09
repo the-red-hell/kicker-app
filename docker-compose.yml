@@ -1,10 +1,16 @@
 services:
   # Database
   db:
-    image: mongo:latest
+    image: postgres:alpine
+    restart: always
+    ports:
+      - "5432:5432"
     environment:
-      MONGO_INITDB_ROOT_USERNAME: root
-      MONGO_INITDB_ROOT_PASSWORD: password
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_DB: ${POSTGRES_DB}
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
 
   # Express App
   express-app:
@@ -14,7 +20,13 @@ services:
       - .:/usr/src/app
     command: sh -c "npm install && npm start"
     environment:
-      - PORT=3000
+      - PORT=${PORT}
+      - DB_HOST=${DB_HOST}
+      - DB_USER=${POSTGRES_USER}
+      - DB_PASSWORD=${POSTGRES_PASSWORD}
+      - DB_NAME=${POSTGRES_DB}
+    depends_on:
+      - db
 
   # Nginx
   nginx-server:
@@ -26,3 +38,7 @@ services:
       - ./public:/usr/share/nginx/html/public:ro
     depends_on:
       - express-app
+
+# persistent volume for postgresql data
+volumes:
+  postgres-data:
