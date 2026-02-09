@@ -25,11 +25,13 @@
   },
   "dependencies": {
     "express": "^5.2.1",
+    "pg": "^8.18.0",
     "pug": "^3.0.3"
   },
   "devDependencies": {
     "@eslint/js": "10.0.1",
     "@types/express": "^5.0.6",
+    "@types/pg": "^8.16.0",
     "eslint": "10.0.0",
     "globals": "^17.3.0",
     "prettier": "^3.8.1"
