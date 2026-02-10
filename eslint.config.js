@@ -7,6 +7,9 @@ export default defineConfig([
     plugins: {
       js,
     },
+    rules: {
+      "no-undef": "warn",
+    },
     extends: ["js/recommended"],
   },
 ]);
