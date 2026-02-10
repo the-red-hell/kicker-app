@@ -16,20 +16,24 @@
   "license": "ISC",
   "author": "",
   "type": "module",
-  "main": "script/index.js",
+  "main": "app.js",
   "scripts": {
-    "dev": "pm2-dev script/index.js",
-    "start": "node script/index.js",
+    "dev": "pm2-dev app.js",
+    "start": "node app.js",
     "format": "prettier --write .",
     "format:check": "prettier --check ."
   },
   "dependencies": {
+    "connect-pg-simple": "^10.0.0",
+    "dotenv": "^17.2.4",
     "express": "^5.2.1",
+    "express-session": "^1.19.0",
     "pg": "^8.18.0",
     "pug": "^3.0.3"
   },
   "devDependencies": {
     "@eslint/js": "10.0.1",
+    "@types/connect-pg-simple": "^7.0.3",
     "@types/express": "^5.0.6",
     "@types/pg": "^8.16.0",
     "eslint": "10.0.0",
