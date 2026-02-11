@@ -7,20 +7,20 @@ import {
 } from "../../../models/user.js";
 
 export const register = async (req, res) => {
-  const { username, password } = req.body;
+  const { username, password, email } = req.body;
 
   try {
     // Check if username already exists first
     const existingUser = await findUserByUsername(username);
     if (existingUser) {
-      return res.status(400).json({ error: "Username already taken" });
+      return res.status(400).json({ error: "Nutzername existiert bereits" });
     }
 
     const hash = await bcrypt.hash(password, 10); // hash password
-    const newUser = await createUser(username, hash);
+    const newUser = await createUser(username, email, hash);
     req.session.userId = newUser.id; // login
 
-    res.status(201).json({ message: "User registered", user: newUser });
+    res.status(201).json({ message: "Nutzer registriert", user: newUser });
   } catch (err) {
     res.status(500).json({ error: err.message });
   }
@@ -33,19 +33,19 @@ export const login = async (req, res) => {
     const user = await findUserByUsername(username);
 
     if (!user) {
-      return res.status(401).json({ error: "Invalid credentials" });
+      return res.status(401).json({ error: "Ungültige Anmeldedaten" });
     }
 
     const match = await bcrypt.compare(password, user.password_hash);
 
     if (!match) {
-      return res.status(401).json({ error: "Invalid credentials" });
+      return res.status(401).json({ error: "Ungültige Anmeldedaten" });
     }
 
     // Set Session
     req.session.userId = user.id;
 
-    res.json({ message: "Logged in successfully" });
+    res.json({ message: "Erfolgreich eingeloggt" });
   } catch (err) {
     res.status(500).json({ error: err.message });
   }
@@ -53,15 +53,16 @@ export const login = async (req, res) => {
 
 export const logout = (req, res) => {
   req.session.destroy((err) => {
-    if (err) return res.status(500).json({ error: "Could not log out" });
+    if (err)
+      return res.status(500).json({ error: "Konnte nicht ausgeloggt werden" });
     res.clearCookie("connect.sid");
+    res.json({ message: "Erfolgreich ausgeloggt" });
   });
-  res.json({ message: "Logged out" });
 };
 
 export const getProfile = async (req, res) => {
   if (!req.session.userId) {
-    return res.status(401).json({ error: "Not authenticated" });
+    return res.status(401).json({ error: "Nicht authentifiziert" });
   }
 
   try {

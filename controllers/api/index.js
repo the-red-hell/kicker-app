@@ -6,3 +6,5 @@ const apiRouter = Router();
 
 apiRouter.use("/auth", authRouter);
 apiRouter.get("/players", playersRouter);
+
+export default apiRouter;
