@@ -24,6 +24,7 @@
     "format:check": "prettier --check ."
   },
   "dependencies": {
+    "bcrypt": "^6.0.0",
     "connect-pg-simple": "^10.0.0",
     "dotenv": "^17.2.4",
     "express": "^5.2.1",
@@ -33,6 +34,7 @@
   },
   "devDependencies": {
     "@eslint/js": "10.0.1",
+    "@types/bcrypt": "^6.0.0",
     "@types/connect-pg-simple": "^7.0.3",
     "@types/express": "^5.0.6",
     "@types/pg": "^8.16.0",

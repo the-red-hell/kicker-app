@@ -3,6 +3,6 @@ import { getPlayerById } from "./retrieval.js";
 
 const playersRouter = new Router();
 
-playersRouter.get("/player/:id", getPlayerById);
+playersRouter.get("/:id", getPlayerById);
 
 export default playersRouter;

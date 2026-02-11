@@ -2,45 +2,47 @@ import express from "express";
 import process from "process";
 import "dotenv/config";
 import console from "console";
-import playersRouter from "./controllers/players/index.js";
-import sessionRouter from "./controllers/session.js";
+import apiRouter from "./controllers/api/index.js";
 import expressSession from "express-session";
 import connectPgSimple from "connect-pg-simple";
 import { pool as pgPool } from "./models/index.js";
 
-const pgSession = connectPgSimple(expressSession);
+const PG_SESSION = connectPgSimple(expressSession);
 
-const app = express();
+const APP = express();
 const PORT = process.env.PORT || 3000;
 
-app.set("view engine", "pug");
+// Middleware setup for json and urlencoded form data
+APP.use(express.json());
+APP.use(express.urlencoded({ extended: true }));
+
+APP.set("view engine", "pug");
 
 // session management
-app.use(
+APP.use(
   expressSession({
     secret: process.env.SESSION_COOKIE_SECRET,
     resave: false,
     saveUninitialized: false,
-    cookie: { maxAge: 5 * 24 * 60 * 60 * 1000 }, // 5 days
-    store: new pgSession({
+    cookie: { maxAge: 30 * 24 * 60 * 60 * 1000 }, // 30 days
+    store: new PG_SESSION({
       pool: pgPool,
       createTableIfMissing: true,
       tableName: "user_session",
-      ttl: 5 * 24 * 60 * 60 * 1000, // 5 days
+      ttl: 30 * 24 * 60 * 60 * 1000, // 30 days
       autoRemoveInterval: 60 * 60 * 1000, // Check for expired sessions every hour
     }),
   })
 );
 
-app.get("/", (_req, res) => {
+APP.get("/", (_req, res) => {
   res.render("home", { title: "Home" });
   console.log("Received a request at /");
 });
 
-app.use("/players", playersRouter);
-app.use("/session", sessionRouter);
+APP.use("/api", apiRouter);
 
-const server = app.listen(PORT, () => {
+const server = APP.listen(PORT, () => {
   console.log(
     `Server started on: ${server.address().address}, port: ${server.address().port}`
   );
