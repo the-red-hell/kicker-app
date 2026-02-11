@@ -11,14 +11,15 @@ services:
       POSTGRES_DB: ${POSTGRES_DB}
     volumes:
       - postgres-data:/var/lib/postgresql/data
+      - ./models/init/:/docker-entrypoint-initdb.d:ro
 
   # Express App
   express-app:
-    image: node:slim
-    working_dir: /usr/src/app
+    build:
+      context: .
     volumes:
       - .:/usr/src/app
-    command: sh -c "npm install && npm start"
+      - /usr/src/app/node_modules
     environment:
       - PORT=${PORT}
       - DB_HOST=${DB_HOST}
@@ -27,6 +28,15 @@ services:
       - DB_NAME=${POSTGRES_DB}
     depends_on:
       - db
+    develop:
+      watch:
+        - action: sync
+          path: ./
+          target: /usr/src/app
+          ignore:
+            - node_modules/
+        - action: rebuild
+          path: package.json
 
   # Nginx
   nginx-server:
