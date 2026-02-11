@@ -1,4 +1,5 @@
-import { retrievePlayerById } from "../../models/players.js";
+import { retrievePlayerById } from "../../../models/players.js";
+import console from "console";
 
 export const getPlayerById = async (req, res) => {
   const { id } = req.params;
