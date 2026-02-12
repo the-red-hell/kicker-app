@@ -2,7 +2,7 @@ import express from "express";
 import process from "process";
 import "dotenv/config";
 import console from "console";
-import apiRouter from "./controllers/api/index.js";
+import apiRouter from "./controllers/api/router.js";
 import expressSession from "express-session";
 import connectPgSimple from "connect-pg-simple";
 import { pool as pgPool } from "./models/index.js";
