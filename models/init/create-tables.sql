@@ -6,3 +6,14 @@ CREATE TABLE IF NOT EXISTS users (
     image_url TEXT,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
+
+CREATE TABLE IF NOT EXISTS games (
+    id SERIAL PRIMARY KEY,
+    attack_white INTEGER REFERENCES users(id),
+    attack_black INTEGER REFERENCES users(id),
+    defense_white INTEGER REFERENCES users(id),
+    defense_black INTEGER REFERENCES users(id),
+    points_white INTEGER NOT NULL,
+    points_black INTEGER NOT NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
