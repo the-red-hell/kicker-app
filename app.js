@@ -2,10 +2,10 @@ import express from "express";
 import process from "process";
 import "dotenv/config";
 import console from "console";
-import apiRouter from "./controllers/api/router.js";
 import expressSession from "express-session";
 import connectPgSimple from "connect-pg-simple";
 import { pool as pgPool } from "./models/index.js";
+import mainRouter from "./controllers/home.js";
 
 const PG_SESSION = connectPgSimple(expressSession);
 
@@ -35,12 +35,7 @@ APP.use(
   })
 );
 
-APP.get("/", (_req, res) => {
-  res.render("home", { title: "Home" });
-  console.log("Received a request at /");
-});
-
-APP.use("/api", apiRouter);
+APP.use("/", mainRouter)
 
 const server = APP.listen(PORT, () => {
   console.log(
