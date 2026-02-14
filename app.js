@@ -35,7 +35,7 @@ APP.use(
   })
 );
 
-APP.use("/", mainRouter)
+APP.use("/", mainRouter);
 
 const server = APP.listen(PORT, () => {
   console.log(

@@ -20,9 +20,11 @@ export const register = async (req, res) => {
     const newUser = await createUser(username, email, hash);
     req.session.userId = newUser.id; // login
 
-    res.status(201).json({ message: "Nutzer registriert", user: newUser });
+    return res
+      .status(201)
+      .json({ message: "Nutzer registriert", user: newUser });
   } catch (err) {
-    res.status(500).json({ error: err.message });
+    return res.status(500).json({ error: err.message });
   }
 };
 
@@ -45,9 +47,16 @@ export const login = async (req, res) => {
     // Set Session
     req.session.userId = user.id;
 
-    res.json({ message: "Erfolgreich eingeloggt" });
+    // check if we should redirect
+    if (req.session.redirectTo) {
+      const redirectUrl = req.session.redirectTo;
+      delete req.session.redirectTo;
+      return res.redirect(redirectUrl);
+    } else {
+      return res.json({ message: "Erfolgreich eingeloggt" });
+    }
   } catch (err) {
-    res.status(500).json({ error: err.message });
+    return res.status(500).json({ error: err.message });
   }
 };
 
@@ -56,7 +65,7 @@ export const logout = (req, res) => {
     if (err)
       return res.status(500).json({ error: "Konnte nicht ausgeloggt werden" });
     res.clearCookie("connect.sid");
-    res.json({ message: "Erfolgreich ausgeloggt" });
+    return res.json({ message: "Erfolgreich ausgeloggt" });
   });
 };
 
@@ -67,8 +76,8 @@ export const getProfile = async (req, res) => {
 
   try {
     const user = await findUserById(req.session.userId);
-    res.json({ user });
+    return res.json({ user });
   } catch (err) {
-    res.status(500).json({ error: err.message });
+    return res.status(500).json({ error: err.message });
   }
 };
