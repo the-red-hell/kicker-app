@@ -8,7 +8,7 @@ html
       link(rel='stylesheet' type="text/css" href='/static/css/style.css')
     body
       block header
-        #header
+        header#header
           nav
             ul
               li: a(href='/') Home
@@ -19,6 +19,6 @@ html
 
       block content
       block footer
-        #footer
+        footer#footer
           p &copy; #{new Date().getFullYear()} Kicker-Tracking App
           a(href='https://github.com/the-red-hell/web-engineering-projekt' target="_blank") View Source

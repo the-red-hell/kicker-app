@@ -1,4 +1,3 @@
-
 ## Installation
 
 - `brew install colima docker docker-compose git gh` (Alternativ kann auch anstelle der ersten 3, [Docker Desktop](https://www.docker.com/get-started/) installiert werden.)

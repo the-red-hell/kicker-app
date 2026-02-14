@@ -1,4 +1,4 @@
-const authMiddleware = (req, res, next) => {
+const middleware = (req, res, next) => {
   if (!req.session.userId) {
     return res.status(401).json({ error: "Nicht authentifiziert" });
   }
@@ -7,4 +7,4 @@ const authMiddleware = (req, res, next) => {
   next();
 };
 
-export default authMiddleware;
+export default middleware;
