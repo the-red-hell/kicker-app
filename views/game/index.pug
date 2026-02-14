@@ -1,0 +1,9 @@
+extends ../layout
+
+block content
+    script(src="/api/game-socket/socket.io.js") 
+    script(type="module").
+        const socket = io({path:"/api/game-socket"});
+
+        socket.emit("joinGame", { gameId: "example-game-id" });
+    p Game

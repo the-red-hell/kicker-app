@@ -1,6 +1,7 @@
 import { Router } from "express";
 import console from "console";
 import apiRouter from "./api/router.js";
+import gameRouter from "./game/router.js";
 
 const mainRouter = Router();
 
@@ -14,6 +15,7 @@ mainRouter.get("/", (_req, res) => {
   console.log("Received a request at /");
 });
 
+mainRouter.use("/game", gameRouter);
 mainRouter.use("/api", apiRouter);
 
 export default mainRouter;
