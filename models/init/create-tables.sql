@@ -1,4 +1,5 @@
-CREATE TYPE possible_positions AS ENUM ('attack-white', 'attack-black', 'defense-white', 'defense-black');
+CREATE TYPE possible_positions AS ENUM ('attack', 'defense');
+CREATE TYPE possible_teams AS ENUM ('white', 'black');
 CREATE TYPE status AS ENUM ('waiting', 'active', 'finished');
 
 CREATE TABLE IF NOT EXISTS users (
@@ -26,7 +27,8 @@ CREATE TABLE IF NOT EXISTS game_players (
     game_id INTEGER REFERENCES games(id) ON DELETE CASCADE,
     user_id INTEGER REFERENCES users(id),
     goals INTEGER DEFAULT 0,
-    position possible_positions NOT NULL
+    position possible_positions NOT NULL,
+    team possible_teams NOT NULL
 );
 
 CREATE TABLE IF NOT EXISTS tables (

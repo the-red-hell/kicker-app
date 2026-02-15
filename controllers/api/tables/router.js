@@ -4,6 +4,6 @@ import { generateQRCode, getTables } from "./controller.js";
 const tablesRouter = Router();
 
 tablesRouter.get("/", getTables);
-tablesRouter.get("/:tableId/qr-code/:pos", generateQRCode);
+tablesRouter.get("/:tableId/qr-code/", generateQRCode);
 
 export default tablesRouter;

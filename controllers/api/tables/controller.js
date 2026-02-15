@@ -2,23 +2,28 @@ import console from "console";
 import QRCode from "qrcode";
 import { retrieveTableById, retrieveTables } from "../../../models/tables.js";
 import { URLSearchParams } from "url";
-import { possibleTablePositions } from "../../../models/types.js";
+import { possiblePositions, possibleTeams } from "../../../models/types.js";
 
 const JOIN_PATH = "/game/join";
 
 /**
- * Generates qr code for given table id and position.
+ * Generates qr code for given table id, position, and team.
  *
- * @param {Request} req request with params tableId and pos
+ * @param {Request} req request with params tableId and query params position and team
  * @param {Response} res
  * @returns qr code data and image as base64 string
  */
 export const generateQRCode = async (req, res) => {
-  const { tableId, pos } = req.params;
+  const { tableId } = req.params;
+  const { position, team } = req.query;
   try {
     // position doesn't exist
-    if (!possibleTablePositions.includes(pos)) {
+    if (!possiblePositions.includes(position)) {
       return res.status(400).json({ error: "Ungültige Position" });
+    }
+    // team doesn't exist
+    if (!possibleTeams.includes(team)) {
+      return res.status(400).json({ error: "Ungültiges Team" });
     }
 
     // table doesn't exist
@@ -27,7 +32,7 @@ export const generateQRCode = async (req, res) => {
       return res.status(404).json({ error: "Tisch nicht gefunden" });
     }
 
-    const queryParams = new URLSearchParams({ tableId, pos });
+    const queryParams = new URLSearchParams({ tableId, position, team });
     const url = `${req.protocol}://${req.get("host")}${JOIN_PATH}?${queryParams.toString()}`;
     const image = await QRCode.toDataURL(url);
 
