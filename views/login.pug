@@ -1,0 +1,12 @@
+extends layout 
+
+block content
+    h1 Login
+    form(action="/api/auth/login" method="POST")#login-form
+        label(for="username") Username:
+        input(type="text" name="username" required)#username
+        br
+        label(for="password") Password:
+        input(type="password" name="password" required)#password
+        br
+        button(type="submit") Login

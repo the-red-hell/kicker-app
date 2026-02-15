@@ -5,7 +5,7 @@ export const authenticatedMiddleware = (req, res, next) => {
   if (req.session && req.session.userId) {
     return next();
   } else {
-    req.session.returnTo = req.url;
-    return res.redirect("/login");
+    req.session.returnTo = req.originalUrl;
+    return res.redirect("/auth/login");
   }
 };

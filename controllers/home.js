@@ -2,6 +2,7 @@ import { Router } from "express";
 import console from "console";
 import apiRouter from "./api/router.js";
 import gameRouter from "./game/router.js";
+import authenticationRouter from "./authentication/router.js";
 
 const mainRouter = Router();
 
@@ -17,5 +18,6 @@ mainRouter.get("/", (_req, res) => {
 
 mainRouter.use("/game", gameRouter);
 mainRouter.use("/api", apiRouter);
+mainRouter.use("/auth", authenticationRouter);
 
 export default mainRouter;

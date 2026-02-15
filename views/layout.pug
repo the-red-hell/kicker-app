@@ -13,9 +13,9 @@ html
             ul
               li: a(href='/') Home
               if !loggedIn
-                li: a(href='/login') Login
+                li: a(href='/auth/login') Login
               else
-                li: a(href='/logout') Logout
+                li: a(href='/auth/logout') Logout
 
       block content
       block footer
