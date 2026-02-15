@@ -20,6 +20,7 @@ CREATE TABLE IF NOT EXISTS games (
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
+-- M-N relationship between games and players
 CREATE TABLE IF NOT EXISTS game_players (
     id SERIAL PRIMARY KEY,
     game_id INTEGER REFERENCES games(id) ON DELETE CASCADE,

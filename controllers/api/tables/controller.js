@@ -3,9 +3,9 @@ import QRCode from "qrcode";
 import {
   retrieveTableById,
   retrieveTables,
-  possibleTablePositions,
 } from "../../../models/tables.js";
 import { URLSearchParams } from "url";
+import { possibleTablePositions } from "../../../models/types.js";
 
 const JOIN_PATH = "/game/join";
 
