@@ -72,12 +72,15 @@ export const getProfile = async (req, res) => {
 };
 
 function redirectIfAuthenticated(req, res) {
-    // check if we should redirect
-    let redirectUrl = req.session.redirectTo;
-    if (req.session.redirectTo) {
-      delete req.session.redirectTo;
-    } else {
-      redirectUrl = "/dashboard";
-    }
-    return res.json({ message: "Erfolgreich eingeloggt", redirectTo: redirectUrl });
+  // check if we should redirect
+  let redirectUrl = req.session.redirectTo;
+  if (req.session.redirectTo) {
+    delete req.session.redirectTo;
+  } else {
+    redirectUrl = "/dashboard";
+  }
+  return res.json({
+    message: "Erfolgreich eingeloggt",
+    redirectTo: redirectUrl,
+  });
 }

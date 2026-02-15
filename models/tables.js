@@ -1,12 +1,5 @@
 import { query } from "./index.js";
 
-export const possibleTablePositions = [
-  "attack-white",
-  "defense-white",
-  "attack-black",
-  "defense-black",
-];
-
 export const createTable = async (name, location) => {
   const insertQuery = `
     INSERT INTO tables (name, location)
