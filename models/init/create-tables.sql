@@ -1,6 +1,6 @@
 CREATE TYPE possible_positions AS ENUM ('attack', 'defense');
 CREATE TYPE possible_teams AS ENUM ('white', 'black');
-CREATE TYPE status AS ENUM ('waiting', 'active', 'finished');
+CREATE TYPE status AS ENUM ('waiting', 'active', 'ended');
 
 CREATE TABLE IF NOT EXISTS users (
     id SERIAL PRIMARY KEY,
@@ -11,10 +11,19 @@ CREATE TABLE IF NOT EXISTS users (
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
+CREATE TABLE IF NOT EXISTS tables (
+    id SERIAL PRIMARY KEY,
+    name VARCHAR(100) NOT NULL,
+    location VARCHAR(255),
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+
 CREATE TABLE IF NOT EXISTS games (
     id SERIAL PRIMARY KEY,
-    points_white INTEGER NOT NULL,
-    points_black INTEGER NOT NULL,
+    table_id INTEGER NOT NULL REFERENCES tables(id),
+    points_white INTEGER NOT NULL DEFAULT 0,
+    points_black INTEGER NOT NULL DEFAULT 0,
     started_at TIMESTAMP,
     ended_at TIMESTAMP,
     status status NOT NULL DEFAULT 'waiting',
@@ -29,13 +38,6 @@ CREATE TABLE IF NOT EXISTS game_players (
     goals INTEGER DEFAULT 0,
     position possible_positions NOT NULL,
     team possible_teams NOT NULL
-);
-
-CREATE TABLE IF NOT EXISTS tables (
-    id SERIAL PRIMARY KEY,
-    name VARCHAR(100) NOT NULL,
-    location VARCHAR(255),
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
 -- test data

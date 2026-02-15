@@ -5,7 +5,7 @@ import {
   createUser,
   findUserByUsername,
   findUserById,
-} from "../../../models/user.js";
+} from "../../../models/users.js";
 
 // register a new user and log them in immediately
 export const register = async (req, res) => {

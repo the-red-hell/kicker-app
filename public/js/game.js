@@ -19,3 +19,17 @@ socket.on("connect", () => {
     position: POSITION,
   });
 });
+
+socket.on("notification", (message) => {
+  console.log("Received notification:", message);
+  // TODO display notification in UI
+});
+
+socket.on("error", (message) => {
+  console.error("Received error:", message);
+  // TODO display error in UI
+});
+
+socket.on("disconnect", () => {
+  console.log("Disconnected from game socket server");
+});

@@ -1,3 +1,4 @@
+import { retrieveTableById } from "../../models/tables.js";
 import { possiblePositions, possibleTeams } from "../../models/types.js";
 
 /**
@@ -7,10 +8,24 @@ import { possiblePositions, possibleTeams } from "../../models/types.js";
  * @param {Request} req
  * @param {Response} res
  */
-export const joinGame = (req, res) => {
-  const { tableId, position, team } = req.query;
+export const joinGame = async (req, res) => {
+  const { tableId } = req.params;
+  const { position, team } = req.query;
   if (!possiblePositions.includes(position) || !possibleTeams.includes(team)) {
-    return res.status(400).send("Ungültiger link!");
+    return res.status(400).send("Ungültiger link!"); // TODO
   }
-  res.render("game", { title: "Game", tableId, position, team });
+  if (!tableId || !(await retrieveTableById(tableId))) {
+    return res.status(404).send("Tisch nicht gefunden!"); // TODO
+  }
+
+  res.render("game/activeGame", { title: "Game", tableId, position, team });
+};
+
+/**
+ *
+ * @param {Request} req
+ * @param {Response} res
+ */
+export const gamePage = (req, res) => {
+  res.render("game", { title: "Game" });
 };

@@ -1,9 +1,4 @@
-extends ../layout
+extends ../layout 
 
 block content
-    script.
-        window.TABLE_ID = "#{tableId}";
-        window.TEAM = "#{team}";
-        window.POSITION = "#{position}";
-    script(type="module" src="/static/js/game.js")
-    p Game, #{tableId}, #{team}, #{position}
+    h2 Beginnen Sie mit einem Spiel indem Sie den QR-Code scannen!

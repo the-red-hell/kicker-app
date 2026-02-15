@@ -4,7 +4,7 @@ import { retrieveTableById, retrieveTables } from "../../../models/tables.js";
 import { URLSearchParams } from "url";
 import { possiblePositions, possibleTeams } from "../../../models/types.js";
 
-const JOIN_PATH = "/game/join";
+const JOIN_PATH = "/game";
 
 /**
  * Generates qr code for given table id, position, and team.
@@ -32,8 +32,8 @@ export const generateQRCode = async (req, res) => {
       return res.status(404).json({ error: "Tisch nicht gefunden" });
     }
 
-    const queryParams = new URLSearchParams({ tableId, position, team });
-    const url = `${req.protocol}://${req.get("host")}${JOIN_PATH}?${queryParams.toString()}`;
+    const queryParams = new URLSearchParams({ position, team });
+    const url = `${req.protocol}://${req.get("host")}${JOIN_PATH}/${tableId}?${queryParams.toString()}`;
     const image = await QRCode.toDataURL(url);
 
     return res.json({ url, image });

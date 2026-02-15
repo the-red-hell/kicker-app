@@ -1,14 +1,11 @@
 import { Router } from "express";
-import { authenticatedMiddleware } from "../common.js";
-import { joinGame } from "./controller.js";
+import { checkAuthenticationMiddleware } from "../common.js";
+import { gamePage, joinGame } from "./controller.js";
 
 const gameRouter = new Router();
-gameRouter.use(authenticatedMiddleware);
+gameRouter.use(checkAuthenticationMiddleware);
 
-gameRouter.get("/", () => {
-  // TODO: maybe show a list of active games to join?
-});
-
-gameRouter.get("/join", joinGame);
+gameRouter.get("/", gamePage);
+gameRouter.get("/:tableId", joinGame);
 
 export default gameRouter;
