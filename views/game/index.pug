@@ -1,9 +1,9 @@
 extends ../layout
 
 block content
-    script(src="/api/game-socket/socket.io.js") 
-    script(type="module").
-        const socket = io({path:"/api/game-socket"});
-
-        socket.emit("joinGame", { gameId: "example-game-id" });
-    p Game
+    script.
+        window.TABLE_ID = "#{tableId}";
+        window.TEAM = "#{team}";
+        window.POSITION = "#{position}";
+    script(type="module" src="/static/js/game.js")
+    p Game, #{tableId}, #{team}, #{position}
