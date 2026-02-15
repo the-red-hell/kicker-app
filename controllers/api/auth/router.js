@@ -1,11 +1,10 @@
 import { Router } from "express";
-import { register, getProfile, login, logout } from "./controller.js";
+import { register, getProfile, login } from "./controller.js";
 
-const authRouter = new Router();
+const apiAuthRouter = new Router();
 
-authRouter.post("/register", register);
-authRouter.post("/login", login);
-authRouter.post("/logout", logout);
-authRouter.get("/profile", getProfile);
+apiAuthRouter.post("/register", register);
+apiAuthRouter.post("/login", login);
+apiAuthRouter.get("/profile", getProfile);
 
-export default authRouter;
+export default apiAuthRouter;

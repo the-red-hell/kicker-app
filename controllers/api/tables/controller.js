@@ -1,9 +1,6 @@
 import console from "console";
 import QRCode from "qrcode";
-import {
-  retrieveTableById,
-  retrieveTables,
-} from "../../../models/tables.js";
+import { retrieveTableById, retrieveTables } from "../../../models/tables.js";
 import { URLSearchParams } from "url";
 import { possibleTablePositions } from "../../../models/types.js";
 
