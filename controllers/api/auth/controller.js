@@ -20,9 +20,7 @@ export const register = async (req, res) => {
     const newUser = await createUser(username, email, hash);
     req.session.userId = newUser.id; // login
 
-    return res
-      .status(201)
-      .json({ message: "Nutzer registriert", user: newUser });
+    redirectIfAuthenticated(req, res);
   } catch (err) {
     return res.status(500).json({ error: err.message });
   }
@@ -44,17 +42,8 @@ export const login = async (req, res) => {
       return res.status(401).json({ error: "Ungültige Anmeldedaten" });
     }
 
-    // Set Session
-    req.session.userId = user.id;
-
-    // check if we should redirect
-    if (req.session.redirectTo) {
-      const redirectUrl = req.session.redirectTo;
-      delete req.session.redirectTo;
-      return res.redirect(redirectUrl);
-    } else {
-      return res.json({ message: "Erfolgreich eingeloggt" });
-    }
+    req.session.userId = user.id; // login
+    redirectIfAuthenticated(req, res);
   } catch (err) {
     return res.status(500).json({ error: err.message });
   }
@@ -65,7 +54,7 @@ export const logout = (req, res) => {
     if (err)
       return res.status(500).json({ error: "Konnte nicht ausgeloggt werden" });
     res.clearCookie("connect.sid");
-    return res.json({ message: "Erfolgreich ausgeloggt" });
+    return res.json({ message: "Erfolgreich ausgeloggt", redirectTo: "/" });
   });
 };
 
@@ -81,3 +70,14 @@ export const getProfile = async (req, res) => {
     return res.status(500).json({ error: err.message });
   }
 };
+
+function redirectIfAuthenticated(req, res) {
+    // check if we should redirect
+    let redirectUrl = req.session.redirectTo;
+    if (req.session.redirectTo) {
+      delete req.session.redirectTo;
+    } else {
+      redirectUrl = "/dashboard";
+    }
+    return res.json({ message: "Erfolgreich eingeloggt", redirectTo: redirectUrl });
+}
