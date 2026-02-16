@@ -20,6 +20,11 @@ socket.on("connect", () => {
   });
 });
 
+socket.on("currentPlayers", (players) => {
+  console.log("Current players in the game:", players);
+  // TODO display current players in UI
+});
+
 socket.on("notification", (message) => {
   console.log("Received notification:", message);
   // TODO display notification in UI

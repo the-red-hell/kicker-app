@@ -27,7 +27,7 @@ export const updateUserFromGame = async (gameId, userId, position, team) => {
  * @param {string} gameId
  * @returns {Promise<Array>} an array of users in the game
  */
-export const retrievePlayersByGameId = async (gameId) => {
+export const retrieveUsersByGameId = async (gameId) => {
   const res = await query(
     `SELECT gp.*, u.username FROM game_players gp
      JOIN users u ON gp.user_id = u.id
