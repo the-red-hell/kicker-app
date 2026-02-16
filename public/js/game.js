@@ -35,6 +35,11 @@ socket.on("error", (message) => {
   // TODO display error in UI
 });
 
+socket.on("gameStarted", () => {
+  console.log("Game has started!");
+  // TODO transition to game screen
+});
+
 socket.on("disconnect", () => {
   console.log("Disconnected from game socket server");
 });
