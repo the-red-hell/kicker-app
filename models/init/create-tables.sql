@@ -37,7 +37,12 @@ CREATE TABLE IF NOT EXISTS game_players (
     user_id INTEGER REFERENCES users(id),
     goals INTEGER DEFAULT 0,
     position possible_positions NOT NULL,
-    team possible_teams NOT NULL
+    team possible_teams NOT NULL,
+
+    -- player can't hold two positions at once
+    CONSTRAINT unique_user_per_game UNIQUE (game_id, user_id),
+    -- position/team is only taken by one person
+    CONSTRAINT unique_position_per_game UNIQUE (game_id, position, team)
 );
 
 -- test data
