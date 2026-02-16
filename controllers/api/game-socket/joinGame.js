@@ -17,7 +17,7 @@ const joinGame = async (socket, session, tableId, position, team) => {
   await query("BEGIN");
 
   try {
-    await handleJoinGame(socket, session, tableId, team, position);
+    await handleJoinGame(socket, session, tableId, position, team);
     await query("COMMIT");
   } catch (error) {
     console.error("Error handling joinGame:", error);
@@ -48,10 +48,10 @@ const joinGame = async (socket, session, tableId, position, team) => {
  * @param {Socket} socket
  * @param {Session} session
  * @param {string} tableId
- * @param {string} team
  * @param {string} position
+ * @param {string} team
  */
-async function handleJoinGame(socket, session, tableId, team, position) {
+async function handleJoinGame(socket, session, tableId, position, team) {
   const game = await createAndGetGameIfNotExists(tableId, session.userId);
 
   console.log("Game found/created:", game);
