@@ -12,18 +12,17 @@ export const register = async (req, res) => {
   const { username, password, email } = req.body;
 
   try {
-    // Check if username already exists first
-    const existingUser = await findUserByUsername(username);
-    if (existingUser) {
-      return res.status(400).json({ error: "Nutzername existiert bereits" });
-    }
-
     const hash = await bcrypt.hash(password, 10); // hash password
     const newUser = await createUser(username, email, hash);
     req.session.userId = newUser.id; // login
 
     redirectIfLoggedIn(req, res);
   } catch (err) {
+    // postgres unique_violation
+    if (err.code === "23505") {
+      return res.status(400).json({ error: "Nutzer existiert bereits" }); // TODO: specify whether username or email?
+    }
+
     return res.status(500).json({ error: err.message });
   }
 };
