@@ -38,7 +38,19 @@ const gameSocket = (socket) => {
     } catch (error) {
       console.error("Error handling joinGame:", error);
       await query("ROLLBACK");
-      socket.emit("error", "Fehler beim Beitreten des Spiels!"); // TODO
+
+      // postgres unique_violation
+      if (error.code === "23505") {
+        socket.emit("error", "Zu langsam! Position oder Team bereits besetzt!"); // TODO
+      } else if (error.message === "GAME_FULL") {
+        // game is full
+        socket.emit("error", "Spiel ist voll!"); // TODO
+      } else if (error.message === "GAME_ACTIVE") {
+        socket.emit("error", "Spiel ist bereits aktiv!"); // TODO
+      } else {
+        socket.emit("error", "Fehler beim Beitreten des Spiels!"); // TODO
+      }
+
       socket.disconnect();
     }
   });
@@ -57,19 +69,15 @@ const gameSocket = (socket) => {
  * @param {string} position
  */
 async function handleJoinGame(socket, session, tableId, team, position) {
-  const game = await createAndGetGameIfNotExists(
-    socket,
-    tableId,
-    session.userId
-  );
+  const game = await createAndGetGameIfNotExists(tableId, session.userId);
 
   console.log("Game found/created:", game);
-  await updateOrAddPlayer(socket, game, session.userId, position, team);
+  await updateOrAddPlayer(game, session.userId, position, team);
 
   const roomName = `table-${tableId}`;
   socket.join(roomName);
 
-  const users = await emitUpdatedUsers(socket, roomName, game.id);
+  const users = await emitUserUpdate(socket, roomName, game.id);
 
   // start game if there are 4 players
   if (users.length === 3) {
@@ -78,7 +86,7 @@ async function handleJoinGame(socket, session, tableId, team, position) {
   }
 }
 
-async function createAndGetGameIfNotExists(socket, tableId, userId) {
+async function createAndGetGameIfNotExists(tableId, userId) {
   const game = await retrieveCurrentGameByTableId(tableId);
   const users = await retrieveUsersByGameId(game?.id);
   const doesGameExist = !!game;
@@ -90,21 +98,18 @@ async function createAndGetGameIfNotExists(socket, tableId, userId) {
   if (!doesGameExist) {
     return await createGame(tableId);
   } else if (isGameActive && !isUserInGame(users, userId)) {
-    socket.emit("error", "Spiel ist bereits aktiv!"); // TODO
-    return socket.disconnect();
+    throw new Error("GAME_ACTIVE");
   }
 
   return game;
 }
 
-async function updateOrAddPlayer(socket, game, userId, position, team) {
+async function updateOrAddPlayer(game, userId, position, team) {
   const users = await retrieveUsersByGameId(game.id);
 
   // if there are already 4 players, or if the position is already taken, we don't allow joining
   if (users.length >= 4) {
-    // game is full
-    socket.emit("error", "Spiel ist voll!"); // TODO
-    return socket.disconnect();
+    throw new Error("GAME_FULL");
   }
 
   // the user is already in the game as checked in the previous function, but we don't allow updating position/team
@@ -123,7 +128,7 @@ function isUserInGame(users, userId) {
   return users.some((p) => p.user_id === userId);
 }
 
-async function emitUpdatedUsers(socket, roomName, gameId) {
+async function emitUserUpdate(socket, roomName, gameId) {
   const users = await retrieveUsersByGameId(gameId);
   socket.emit("currentPlayers", users); // send to the user who just joined
   socket.to(roomName).emit("currentPlayers", users); // send to others in the room
