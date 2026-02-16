@@ -3,7 +3,7 @@ import console from "console";
 import { Socket } from "socket.io";
 import {
   addUserToGame,
-  retrievePlayersByGameId,
+  retrieveUsersByGameId,
   updateUserFromGame,
 } from "../../../models/gamePlayers.js";
 import {
@@ -41,21 +41,19 @@ const gameSocket = (socket) => {
       return socket.disconnect();
     }
 
-    const players = await retrievePlayersByGameId(game.id);
+    const users = await retrieveUsersByGameId(game.id);
 
     // if there are already 4 players, or if the position is already taken, we don't allow joining
     // if the user is already in the game, we allow updating their position/team
-    if (players.length >= 4) {
+    if (users.length >= 4) {
       // game is full
       socket.emit("error", "Spiel ist voll!"); // TODO
       return socket.disconnect();
     }
-    if (players.some((p) => p.user_id === session.userId)) {
+    if (users.some((p) => p.user_id === session.userId)) {
       // user already in game, update them
       await updateUserFromGame(game.id, session.userId, position, team);
-    } else if (
-      players.some((p) => p.position === position && p.team === team)
-    ) {
+    } else if (users.some((p) => p.position === position && p.team === team)) {
       // position & team already taken
       socket.emit("error", "Position bereits besetzt!"); // TODO
       return socket.disconnect();
@@ -64,14 +62,14 @@ const gameSocket = (socket) => {
       await addUserToGame(game.id, session.userId, position, team);
     }
 
-    console.log(
-      `User joining game with tableId: ${tableId}, team: ${team}, position: ${position}`
-    );
     const roomName = `table-${tableId}`;
     socket.join(roomName);
-    console.log(`User joined room: ${roomName}`);
 
-    socket.to(roomName).emit("notification", `A user joined Team ${team}!`);
+    const usersNow = await retrieveUsersByGameId(game.id);
+    socket.emit("currentPlayers", usersNow); // send to the user who just joined
+    socket.to(roomName).emit("currentPlayers", usersNow); // send to others in the room
+
+    // TODO: if the game is now full, we start it and emit an event to all players in the room
   });
 };
 
