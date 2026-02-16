@@ -18,7 +18,7 @@ const gameSocket = (socket) => {
   }
 
   socket.on("joinGame", async ({ tableId, team, position }) => {
-    await joinGame(socket, session, tableId, team, position);
+    await joinGame(socket, session, tableId, position, team);
   });
 };
 
