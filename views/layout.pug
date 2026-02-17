@@ -20,7 +20,7 @@ html
 
               li(style='margin-left: auto;')
               if !loggedIn
-                a(href='/view_profile')
+                a(href='/view-profile')
                   img(src='/static/images/Profile_Icon.png' alt='User' style='height: auto; height: 90px; border: 10px solid #ffffff00;')
               else
                 a(href='/auth/logout') Logout
@@ -30,4 +30,4 @@ html
       block footer
         footer#footer
           p &copy; #{new Date().getFullYear()} Kicker-Tracking App
-          a(href='https://github.com/the-red-hell/web-engineering-projekt' target="_blank") View Source
+          a(href='https://github.com/paulhkz/kicker-app.git' target="_blank") View Source
