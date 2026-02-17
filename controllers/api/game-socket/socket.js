@@ -3,6 +3,7 @@ import console from "console";
 import { Socket } from "socket.io";
 import joinGame from "./joinGame.js";
 import goalScored from "./goalScored.js";
+import { possiblePositions, possibleTeams } from "../../../models/types.js";
 
 /**
  *
@@ -19,12 +20,19 @@ const gameSocket = (socket) => {
   }
 
   socket.on("joinGame", async ({ tableId, team, position }) => {
-    await joinGame(socket, session, tableId, position, team);
+    await joinGame(socket, tableId, position, team);
   });
 
   socket.on("goalScored", async ({ tableId }) => {
-    await goalScored(socket, session, tableId);
+    await goalScored(socket, tableId);
   });
+};
+
+export const checkTeamAndPos = (socket, team, position) => {
+  if (!possiblePositions.includes(position) || !possibleTeams.includes(team)) {
+    socket.emit("error", "Ungültige Anfrage!"); // TODO
+    socket.disconnect();
+  }
 };
 
 export default gameSocket;

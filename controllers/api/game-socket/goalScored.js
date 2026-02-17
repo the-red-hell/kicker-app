@@ -8,13 +8,13 @@ import {
 
 const GOAL_COOLDOWN_MS = 5000;
 
-const goalScored = async (socket, session, tableId) => {
+const goalScored = async (socket, tableId) => {
   const client = await pool.connect();
 
   try {
     await client.query("BEGIN");
 
-    await handleGoalScored(client, socket, session, tableId);
+    await handleGoalScored(client, socket, tableId);
 
     await client.query("COMMIT");
   } catch (error) {
@@ -26,8 +26,9 @@ const goalScored = async (socket, session, tableId) => {
   }
 };
 
-async function handleGoalScored(client, socket, session, tableId) {
+async function handleGoalScored(client, socket, tableId) {
   const now = new Date();
+  const session = socket.request.session;
 
   const game = await retrieveCurrentGameByTableId(client, tableId);
 
