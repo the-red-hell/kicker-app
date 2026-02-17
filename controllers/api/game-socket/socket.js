@@ -2,6 +2,7 @@ import console from "console";
 // eslint-disable-next-line no-unused-vars
 import { Socket } from "socket.io";
 import joinGame from "./joinGame.js";
+import goalScored from "./goalScored.js";
 
 /**
  *
@@ -19,6 +20,10 @@ const gameSocket = (socket) => {
 
   socket.on("joinGame", async ({ tableId, team, position }) => {
     await joinGame(socket, session, tableId, position, team);
+  });
+
+  socket.on("goalScored", async ({ tableId }) => {
+    await goalScored(socket, session, tableId);
   });
 };
 

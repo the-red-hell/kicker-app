@@ -24,8 +24,12 @@ CREATE TABLE IF NOT EXISTS games (
     table_id INTEGER NOT NULL REFERENCES tables(id),
     points_white INTEGER NOT NULL DEFAULT 0,
     points_black INTEGER NOT NULL DEFAULT 0,
+
     started_at TIMESTAMP,
     ended_at TIMESTAMP,
+    -- used for cooldown
+    last_goal_time TIMESTAMP,
+
     status status NOT NULL DEFAULT 'waiting',
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
