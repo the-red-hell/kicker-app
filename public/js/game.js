@@ -40,6 +40,17 @@ socket.on("gameStarted", () => {
   // TODO transition to game screen
 });
 
+socket.on("goalUpdate", (gameState) => {
+  console.log("Received goal update:", gameState);
+  // TODO update score and game state in UI
+});
+
 socket.on("disconnect", () => {
   console.log("Disconnected from game socket server");
+  // window.location.href = "/game"; // Redirect to lobby on disconnect
+});
+
+document.getElementById("scoreGoal").addEventListener("click", () => {
+  console.log("Score Goal button clicked");
+  socket.emit("goalScored", { tableId: TABLE_ID });
 });
