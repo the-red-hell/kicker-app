@@ -16,6 +16,10 @@ mainRouter.get("/", (_req, res) => {
   console.log("Received a request at /");
 });
 
+mainRouter.get("/view_profile", (_req, res) => {
+  res.render("view_profile", { title: "Profile" });
+});
+
 mainRouter.use("/game", gameRouter);
 mainRouter.use("/api", apiRouter);
 mainRouter.use("/auth", authenticationRouter);
