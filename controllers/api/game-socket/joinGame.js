@@ -9,19 +9,20 @@ import {
   retrieveCurrentGameByTableId,
   setGameStarted,
 } from "../../../models/games.js";
-import { query } from "../../../models/index.js";
+import { pool } from "../../../models/index.js";
 // eslint-disable-next-line no-unused-vars
 import { Session } from "express-session";
 
 const joinGame = async (socket, session, tableId, position, team) => {
-  await query("BEGIN");
+  const client = await pool.connect();
+  await client.query("BEGIN");
 
   try {
-    await handleJoinGame(socket, session, tableId, position, team);
-    await query("COMMIT");
+    await handleJoinGame(client, socket, session, tableId, position, team);
+    await client.query("COMMIT");
   } catch (error) {
     console.error("Error handling joinGame:", error);
-    await query("ROLLBACK");
+    await client.query("ROLLBACK");
 
     // postgres unique_violation
     if (error.code === "23505") {
@@ -32,6 +33,7 @@ const joinGame = async (socket, session, tableId, position, team) => {
     } else if (error.message === "GAME_ACTIVE") {
       socket.emit("error", "Spiel ist bereits aktiv!"); // TODO
     } else {
+      console.error(error);
       socket.emit("error", "Fehler beim Beitreten des Spiels!"); // TODO
     }
 
@@ -51,27 +53,38 @@ const joinGame = async (socket, session, tableId, position, team) => {
  * @param {string} position
  * @param {string} team
  */
-async function handleJoinGame(socket, session, tableId, position, team) {
-  const game = await createAndGetGameIfNotExists(tableId, session.userId);
+async function handleJoinGame(
+  client,
+  socket,
+  session,
+  tableId,
+  position,
+  team
+) {
+  const game = await createAndGetGameIfNotExists(
+    client,
+    tableId,
+    session.userId
+  );
 
   console.log("Game found/created:", game);
-  await updateOrAddPlayer(game, session.userId, position, team);
+  await updateOrAddPlayer(client, game, session.userId, position, team);
 
   const roomName = `table-${tableId}`;
   socket.join(roomName);
 
-  const users = await emitUserUpdate(socket, roomName, game.id);
+  const users = await emitUserUpdate(client, socket, roomName, game.id);
 
   // start game if there are 4 players
-  if (users.length === 3) {
+  if (users.length === 2) {
     // TODO: set to 4
-    await startGame(socket, game.id, roomName);
+    await startGame(client, socket, game.id, roomName);
   }
 }
 
-async function createAndGetGameIfNotExists(tableId, userId) {
-  const game = await retrieveCurrentGameByTableId(tableId);
-  const users = await retrieveUsersByGameId(game?.id);
+async function createAndGetGameIfNotExists(client, tableId, userId) {
+  const game = await retrieveCurrentGameByTableId(client, tableId);
+  const users = await retrieveUsersByGameId(client, game?.id);
   const doesGameExist = !!game;
   const isGameActive = game && game.status === "active";
 
@@ -79,7 +92,7 @@ async function createAndGetGameIfNotExists(tableId, userId) {
   // if there is an active game, we don't allow joining unless the user is already in the game (rejoining after refresh)
   // only if the game is in state 'waiting' we allow joining
   if (!doesGameExist) {
-    return await createGame(tableId);
+    return await createGame(client, tableId);
   } else if (isGameActive && !isUserInGame(users, userId)) {
     throw new Error("GAME_ACTIVE");
   }
@@ -87,8 +100,8 @@ async function createAndGetGameIfNotExists(tableId, userId) {
   return game;
 }
 
-async function updateOrAddPlayer(game, userId, position, team) {
-  const users = await retrieveUsersByGameId(game.id);
+async function updateOrAddPlayer(client, game, userId, position, team) {
+  const users = await retrieveUsersByGameId(client, game.id);
 
   // if there are already 4 players, or if the position is already taken, we don't allow joining
   if (users.length >= 4) {
@@ -101,9 +114,9 @@ async function updateOrAddPlayer(game, userId, position, team) {
   // if the user is already in the game we allow updating their position/team
   // condition checking is done by postgres constraints
   if (isUserInGame(users, userId)) {
-    return await updateUserFromGame(game.id, userId, position, team);
+    return await updateUserFromGame(client, game.id, userId, position, team);
   } else {
-    return await addUserToGame(game.id, userId, position, team);
+    return await addUserToGame(client, game.id, userId, position, team);
   }
 }
 
@@ -111,16 +124,16 @@ function isUserInGame(users, userId) {
   return users.some((p) => p.user_id === userId);
 }
 
-async function emitUserUpdate(socket, roomName, gameId) {
-  const users = await retrieveUsersByGameId(gameId);
+async function emitUserUpdate(client, socket, roomName, gameId) {
+  const users = await retrieveUsersByGameId(client, gameId);
   socket.emit("currentPlayers", users); // send to the user who just joined
   socket.to(roomName).emit("currentPlayers", users); // send to others in the room
 
   return users;
 }
 
-async function startGame(socket, gameId, roomName) {
-  await setGameStarted(gameId);
+async function startGame(client, socket, gameId, roomName) {
+  await setGameStarted(client, gameId);
   socket.to(roomName).emit("gameStarted");
   socket.emit("gameStarted");
 }

@@ -1,5 +1,6 @@
 import { retrieveUsersByGameId } from "../../models/gamePlayers.js";
 import { retrieveCurrentGameByTableId } from "../../models/games.js";
+import { pool } from "../../models/index.js";
 import { retrieveTableById } from "../../models/tables.js";
 import { possiblePositions, possibleTeams } from "../../models/types.js";
 
@@ -54,26 +55,30 @@ export const gamePage = (req, res) => {
  * @param {string} position
  * @param {string} team
  * @returns - false if the user is not obligated to join,
- *          - { position, team } if the user is in-game but want's to change position/team,
+ *          - { position, team } if the user is in-game but want's to change position/team, / if he's in-game and the game is active
  *          - undefined if the user is not in-game and the position/team is available
  */
 async function canUserJoin(tableId, userId, position, team) {
-  const game = await retrieveCurrentGameByTableId(tableId);
-  if (game) {
-    const users = await retrieveUsersByGameId(game.id);
+  const client = await pool.connect();
+  try {
+    const game = await retrieveCurrentGameByTableId(client, tableId);
+    if (game) {
+      const users = await retrieveUsersByGameId(client, game.id);
+      const userInGame = users.find((user) => user.user_id === userId);
+      const isPositionAndTeamTaken = users.some(
+        (user) => user.position === position && user.team === team
+      );
 
-    const userInGame = users.find((user) => user.user_id === userId);
-    const isPositionAndTeamTaken = users.some(
-      (user) => user.position === position && user.team === team
-    );
-
-    if (game.status === "active" && !userInGame) {
-      return false;
+      if (game.status === "active" && !userInGame) {
+        return false;
+      }
+      if (userInGame && (isPositionAndTeamTaken || game.status === "active")) {
+        return { position: userInGame.position, team: userInGame.team }; // TODO: maybe show a message
+      } else if (isPositionAndTeamTaken) {
+        return false;
+      }
     }
-    if (userInGame && isPositionAndTeamTaken) {
-      return { position: userInGame.position, team: userInGame.team }; // TODO: maybe show a message
-    } else if (isPositionAndTeamTaken) {
-      return false;
-    }
+  } finally {
+    client.release();
   }
 }
