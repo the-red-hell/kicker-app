@@ -54,3 +54,8 @@ document.getElementById("scoreGoal").addEventListener("click", () => {
   console.log("Score Goal button clicked");
   socket.emit("goalScored", { tableId: TABLE_ID });
 });
+
+document.getElementById("undoGoal").addEventListener("click", () => {
+  console.log("Undo Goal button clicked");
+  socket.emit("undoGoal", { tableId: TABLE_ID });
+});

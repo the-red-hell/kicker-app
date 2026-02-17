@@ -27,11 +27,17 @@ CREATE TABLE IF NOT EXISTS games (
 
     started_at TIMESTAMP,
     ended_at TIMESTAMP,
+
     -- used for cooldown
     last_goal_time TIMESTAMP,
+    last_goal_teams possible_teams[] DEFAULT '{}',
 
     status status NOT NULL DEFAULT 'waiting',
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    
+    -- ensures that the length of last_goal_teams matches the total points
+    -- (more of a sanity check than a real constraint, since the application logic should handle this)
+    CONSTRAINT valid_last_goal_team CHECK (array_length(last_goal_teams, 1) = points_white + points_black)
 );
 
 -- M-N relationship between games and players

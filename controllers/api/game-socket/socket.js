@@ -4,6 +4,7 @@ import { Socket } from "socket.io";
 import joinGame from "./joinGame.js";
 import goalScored from "./goalScored.js";
 import { possiblePositions, possibleTeams } from "../../../models/types.js";
+import undoGoal from "./undoGoal.js";
 
 /**
  *
@@ -25,6 +26,10 @@ const gameSocket = (socket) => {
 
   socket.on("goalScored", async ({ tableId }) => {
     await goalScored(socket, tableId);
+  });
+
+  socket.on("undoGoal", async ({ tableId }) => {
+    await undoGoal(socket, tableId);
   });
 };
 
