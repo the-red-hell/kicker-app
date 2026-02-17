@@ -13,19 +13,21 @@ html
       block header
         header#header
           nav
-            ul(style='display: flex; align-items: center; justify-content: space-between; list-style: none; margin: 0; padding: 0; width: 100%;')
+            ul#iconList
               li
-              a(href=loggedIn ? "/dashboard" : "/")
-                img(src='/static/images/KickerAPP_Logo_tbbg.svg' alt='Home' style='height: auto; height: 90px;')
-
-              li(style='margin-left: auto;')
-              if !loggedIn
+                a(href=loggedIn ? "/dashboard" : "/")
+                  img(src='/static/images/KickerAPP_Logo_tbbg.svg' alt='Home')#logo
+              li.logInOut
+                if !loggedIn
+                  a(href='/auth/login') Login
+                else
+                  a(href='/auth/logout') Logout
+              li
                 a(href='/profile')
-                  img(src='/static/images/Profile_Icon.png' alt='User' style='height: auto; height: 90px; border: 10px solid #ffffff00;')
-              else
-                a(href='/auth/logout') Logout
+                  img(src='/static/images/Profile_Icon.png' alt='User')#profile
 
-      block content
+      div#pageContent
+        block content
 
       block footer
         footer#footer
