@@ -59,10 +59,10 @@ async function handleGoalScored(client, socket, tableId) {
     throw new Error("Game not found or not active when scoring!");
   }
 
-  await emitGoalUpdate(socket, tableId, updatedGame);
+  emitGoalUpdate(socket, tableId, updatedGame);
 }
 
-async function emitGoalUpdate(socket, tableId, updatedGame) {
+export const emitGoalUpdate = (socket, tableId, updatedGame) => {
   const roomName = `table-${tableId}`;
   const update = {
     pointsWhite: updatedGame.points_white,
@@ -70,6 +70,6 @@ async function emitGoalUpdate(socket, tableId, updatedGame) {
   };
   socket.to(roomName).emit("goalUpdate", update);
   socket.emit("goalUpdate", update);
-}
+};
 
 export default goalScored;
