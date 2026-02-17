@@ -17,8 +17,8 @@ mainRouter.get("/", (_req, res) => {
   console.log("Received a request at /");
 });
 
-mainRouter.get("/view-profile", (_req, res) => {
-  res.render("view-profile", { title: "Profile" });
+mainRouter.get("/profile", (_req, res) => {
+  res.render("profile", { title: "Profile" });
 });
 
 mainRouter.use("/game", gameRouter);
