@@ -12,13 +12,16 @@ import {
 import { pool } from "../../../models/index.js";
 // eslint-disable-next-line no-unused-vars
 import { Session } from "express-session";
+import { checkTeamAndPos } from "./socket.js";
 
-const joinGame = async (socket, session, tableId, position, team) => {
+const joinGame = async (socket, tableId, position, team) => {
+  checkTeamAndPos(socket, team, position);
+
   const client = await pool.connect();
   await client.query("BEGIN");
 
   try {
-    await handleJoinGame(client, socket, session, tableId, position, team);
+    await handleJoinGame(client, socket, tableId, position, team);
     await client.query("COMMIT");
   } catch (error) {
     console.error("Error handling joinGame:", error);
@@ -48,19 +51,13 @@ const joinGame = async (socket, session, tableId, position, team) => {
  * - emits the updated player list to all users in the game room
  *
  * @param {Socket} socket
- * @param {Session} session
  * @param {string} tableId
  * @param {string} position
  * @param {string} team
  */
-async function handleJoinGame(
-  client,
-  socket,
-  session,
-  tableId,
-  position,
-  team
-) {
+async function handleJoinGame(client, socket, tableId, position, team) {
+  const session = socket.request.session;
+
   const game = await createAndGetGameIfNotExists(
     client,
     tableId,
