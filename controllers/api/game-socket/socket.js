@@ -28,7 +28,7 @@ const gameSocket = (socket) => {
   });
 };
 
-export const checkTeamAndPos = (socket, team, position) => {
+export const validateTeamAndPos = (socket, team, position) => {
   if (!possiblePositions.includes(position) || !possibleTeams.includes(team)) {
     socket.emit("error", "Ungültige Anfrage!"); // TODO
     socket.disconnect();

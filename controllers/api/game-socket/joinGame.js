@@ -10,12 +10,10 @@ import {
   setGameStarted,
 } from "../../../models/games.js";
 import { pool } from "../../../models/index.js";
-// eslint-disable-next-line no-unused-vars
-import { Session } from "express-session";
-import { checkTeamAndPos } from "./socket.js";
+import { validateTeamAndPos } from "./socket.js";
 
 const joinGame = async (socket, tableId, position, team) => {
-  checkTeamAndPos(socket, team, position);
+  validateTeamAndPos(socket, team, position);
 
   const client = await pool.connect();
   await client.query("BEGIN");
@@ -76,11 +74,17 @@ async function handleJoinGame(client, socket, tableId, position, team) {
     return;
   }
 
-  await updateOrAddPlayer(client, game, session.userId, position, team);
-  await emitUserUpdate(users, socket, roomName);
+  const updated = await updateOrAddPlayer(
+    client,
+    game,
+    session.userId,
+    position,
+    team
+  );
+  await emitUserUpdate(updated, socket, roomName);
 
   // start game if there are 4 players
-  if (users.length === 2) {
+  if (updated.length === 2) {
     // TODO: set to 4
     await startGame(client, socket, game.id, roomName);
   }
