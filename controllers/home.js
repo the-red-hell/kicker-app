@@ -3,6 +3,8 @@ import console from "console";
 import apiRouter from "./api/router.js";
 import gameRouter from "./game/router.js";
 import authenticationRouter from "./authentication/router.js";
+import aboutUs from "./aboutUs.js";
+
 
 const mainRouter = Router();
 
@@ -23,5 +25,6 @@ mainRouter.get("/view_profile", (_req, res) => {
 mainRouter.use("/game", gameRouter);
 mainRouter.use("/api", apiRouter);
 mainRouter.use("/auth", authenticationRouter);
+mainRouter.get("/aboutUs", aboutUs);
 
 export default mainRouter;
