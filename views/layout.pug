@@ -1,4 +1,5 @@
 doctype html
+
 html
     head
       meta(charset='UTF-8')
@@ -6,18 +7,25 @@ html
       meta(http-equiv='X-UA-Compatible' content='ie=edge')
       title= title
       link(rel='stylesheet' type="text/css" href='/static/css/style.css')
+
     body
       block header
         header#header
           nav
-            ul
-              li: a(href='/') Home
+            ul(style='display: flex; align-items: center; justify-content: space-between; list-style: none; margin: 0; padding: 0; width: 100%;')
+              li
+              a(href='/')
+                img(src='/static/images/KickerAPP_Logo_tbbg.svg' alt='Home' style='height: auto; height: 90px;')
+
+              li(style='margin-left: auto;')
               if !loggedIn
-                li: a(href='/auth/login') Login
+                a(href='/')
+                img(src='/static/images/Profile_Icon.png' alt='User' style='height: auto; height: 90px; border: 10px solid #ffffff00;')
               else
-                li: a(href='/auth/logout') Logout
+                a(href='/auth/logout') Logout
 
       block content
+
       block footer
         footer#footer
           p &copy; #{new Date().getFullYear()} Kicker-Tracking App
