@@ -11,6 +11,7 @@ import {
 } from "../../../models/games.js";
 import { pool } from "../../../models/index.js";
 import { validateTeamAndPos } from "./socket.js";
+import { emitGoalUpdate } from "./goalScored.js";
 
 const joinGame = async (socket, tableId, position, team) => {
   validateTeamAndPos(socket, team, position);
@@ -69,22 +70,17 @@ async function handleJoinGame(client, socket, tableId, position, team) {
 
   // game is active, user is rejoining after refresh, we just emit the current player list and game state to the user
   if (game.status === "active") {
-    socket.emit("currentPlayers", users);
+    socket.emit("currentPlayers", users); // send to the user who just joined
     socket.emit("gameStarted");
+    emitGoalUpdate(socket, tableId, game); // we just send it to everyone...
     return;
   }
 
-  const updated = await updateOrAddPlayer(
-    client,
-    game,
-    session.userId,
-    position,
-    team
-  );
-  await emitUserUpdate(updated, socket, roomName);
+  await updateOrAddPlayer(client, game, session.userId, position, team);
+  const updatedUsers = await emitUserUpdate(client, socket, roomName, game.id);
 
   // start game if there are 4 players
-  if (updated.length === 2) {
+  if (updatedUsers.length === 2) {
     // TODO: set to 4
     await startGame(client, socket, game.id, roomName);
   }
@@ -129,7 +125,8 @@ function isUserInGame(users, userId) {
   return users.some((p) => p.user_id === userId);
 }
 
-async function emitUserUpdate(users, socket, roomName) {
+async function emitUserUpdate(client, socket, roomName, gameId) {
+  const users = await retrieveUsersByGameId(client, gameId);
   socket.emit("currentPlayers", users); // send to the user who just joined
   socket.to(roomName).emit("currentPlayers", users); // send to others in the room
 
