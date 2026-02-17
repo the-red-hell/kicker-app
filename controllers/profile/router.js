@@ -1,5 +1,5 @@
 import { Router } from "express";
-import { checkAuthenticationMiddleware } from "../common";
+import { checkAuthenticationMiddleware } from "../common.js";
 
 const profileRouter = new Router();
 
