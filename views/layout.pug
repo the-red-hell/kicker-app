@@ -15,7 +15,7 @@ html
           nav
             ul(style='display: flex; align-items: center; justify-content: space-between; list-style: none; margin: 0; padding: 0; width: 100%;')
               li
-              a(href='/')
+              a(href=loggedIn ? "/dashboard" : "/")
                 img(src='/static/images/KickerAPP_Logo_tbbg.svg' alt='Home' style='height: auto; height: 90px;')
 
               li(style='margin-left: auto;')
