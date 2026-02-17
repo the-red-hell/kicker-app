@@ -5,7 +5,6 @@ import gameRouter from "./game/router.js";
 import authenticationRouter from "./authentication/router.js";
 import aboutUs from "./aboutUs.js";
 
-
 const mainRouter = Router();
 
 mainRouter.use((req, res, next) => {
@@ -18,8 +17,8 @@ mainRouter.get("/", (_req, res) => {
   console.log("Received a request at /");
 });
 
-mainRouter.get("/view_profile", (_req, res) => {
-  res.render("view_profile", { title: "Profile" });
+mainRouter.get("/view-profile", (_req, res) => {
+  res.render("view-profile", { title: "Profile" });
 });
 
 mainRouter.use("/game", gameRouter);
