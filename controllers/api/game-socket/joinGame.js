@@ -64,13 +64,20 @@ async function handleJoinGame(client, socket, tableId, position, team) {
     session.userId
   );
 
-  console.log("Game found/created:", game);
-  await updateOrAddPlayer(client, game, session.userId, position, team);
-
   const roomName = `table-${tableId}`;
   socket.join(roomName);
 
-  const users = await emitUserUpdate(client, socket, roomName, game.id);
+  const users = await retrieveUsersByGameId(client, game.id);
+
+  // game is active, user is rejoining after refresh, we just emit the current player list and game state to the user
+  if (game.status === "active") {
+    socket.emit("currentPlayers", users);
+    socket.emit("gameStarted");
+    return;
+  }
+
+  await updateOrAddPlayer(client, game, session.userId, position, team);
+  await emitUserUpdate(users, socket, roomName);
 
   // start game if there are 4 players
   if (users.length === 2) {
@@ -105,9 +112,6 @@ async function updateOrAddPlayer(client, game, userId, position, team) {
     throw new Error("GAME_FULL");
   }
 
-  // the user is already in the game as checked in the previous function, but we don't allow updating position/team
-  if (game.status === "active") return;
-
   // if the user is already in the game we allow updating their position/team
   // condition checking is done by postgres constraints
   if (isUserInGame(users, userId)) {
@@ -121,8 +125,7 @@ function isUserInGame(users, userId) {
   return users.some((p) => p.user_id === userId);
 }
 
-async function emitUserUpdate(client, socket, roomName, gameId) {
-  const users = await retrieveUsersByGameId(client, gameId);
+async function emitUserUpdate(users, socket, roomName) {
   socket.emit("currentPlayers", users); // send to the user who just joined
   socket.to(roomName).emit("currentPlayers", users); // send to others in the room
 
