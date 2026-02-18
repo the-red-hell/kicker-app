@@ -22,6 +22,6 @@ mainRouter.use("/profile", profileRouter);
 mainRouter.use("/game", gameRouter);
 mainRouter.use("/api", apiRouter);
 mainRouter.use("/auth", authRouter);
-mainRouter.get("/aboutUs", aboutUs);
+mainRouter.get("/about-us", aboutUs);
 
 export default mainRouter;
