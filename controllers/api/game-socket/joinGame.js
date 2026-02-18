@@ -72,7 +72,7 @@ async function handleJoinGame(client, socket, tableId, position, team) {
   if (game.status === "active") {
     socket.emit("currentPlayers", users); // send to the user who just joined
     socket.emit("gameStarted");
-    emitGoalUpdate(socket, tableId, game); // we just send it to everyone...
+    await emitGoalUpdate(socket, roomName, game.id); // we just send it to everyone...
     return;
   }
 
@@ -137,6 +137,7 @@ async function startGame(client, socket, gameId, roomName) {
   await setGameStarted(client, gameId);
   socket.to(roomName).emit("gameStarted");
   socket.emit("gameStarted");
+  await emitGoalUpdate(socket, roomName, gameId);
 }
 
 export default joinGame;

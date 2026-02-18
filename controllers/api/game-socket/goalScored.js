@@ -3,6 +3,7 @@ import { pool } from "../../../models/index.js";
 import { retrieveUsersByGameId } from "../../../models/gamePlayers.js";
 import {
   retrieveCurrentGameByTableId,
+  retrieveGoalsByGameId,
   scoreGoal,
 } from "../../../models/games.js";
 
@@ -14,9 +15,12 @@ const goalScored = async (socket, tableId) => {
   try {
     await client.query("BEGIN");
 
-    await handleGoalScored(client, socket, tableId);
+    const updatedGameId = await handleGoalScored(client, socket, tableId);
 
     await client.query("COMMIT");
+
+    const roomName = `table-${tableId}`;
+    if (updatedGameId) await emitGoalUpdate(socket, roomName, updatedGameId);
   } catch (error) {
     console.error("Error handling goalScored:", error);
     await client.query("ROLLBACK");
@@ -38,10 +42,10 @@ async function handleGoalScored(client, socket, tableId) {
     return;
   }
 
-  const users = await retrieveUsersByGameId(client, game.id);
-  const user = users.find((p) => p.user_id === session.userId);
+  const gamePlayers = await retrieveUsersByGameId(client, game.id);
+  const gamePlayer = gamePlayers.find((p) => p.user_id === session.userId);
   // user is not in-game
-  if (!user) {
+  if (!gamePlayer) {
     await client.query("ROLLBACK");
     return;
   }
@@ -53,23 +57,20 @@ async function handleGoalScored(client, socket, tableId) {
   }
 
   // Update the score within the transaction
-  const updatedGame = await scoreGoal(client, game.id, user.team);
+  const updatedGame = await scoreGoal(client, game.id, session.userId);
 
   if (!updatedGame) {
     throw new Error("Game not found or not active when scoring!");
   }
 
-  emitGoalUpdate(socket, tableId, updatedGame);
+  return updatedGame.id;
 }
 
-export const emitGoalUpdate = (socket, tableId, updatedGame) => {
-  const roomName = `table-${tableId}`;
-  const update = {
-    pointsWhite: updatedGame.points_white,
-    pointsBlack: updatedGame.points_black,
-  };
-  socket.to(roomName).emit("goalUpdate", update);
-  socket.emit("goalUpdate", update);
+export const emitGoalUpdate = async (socket, roomName, gameId) => {
+  const goalUpdate = await retrieveGoalsByGameId(pool, gameId);
+
+  socket.to(roomName).emit("goalUpdate", goalUpdate);
+  socket.emit("goalUpdate", goalUpdate);
 };
 
 export default goalScored;
