@@ -22,8 +22,15 @@ header {
 }
 
 .logInOut {
-  flex-grow: 1;
   text-align: right;
+  display: block;
+  background-color: #00BF63;
+  padding: 14px 16px;
+  text-decoration: none;
+}
+
+#spacer {
+  flex-grow: 1;
 }
 
 #profile{

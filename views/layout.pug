@@ -17,6 +17,7 @@ html
               li
                 a(href=loggedIn ? "/dashboard" : "/")
                   img(src='/static/images/KickerAPP_Logo_tbbg.svg' alt='Home')#logo
+              li#spacer
               li.logInOut
                 if !loggedIn
                   a(href='/auth/login') Login / Register
