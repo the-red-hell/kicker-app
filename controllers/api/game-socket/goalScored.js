@@ -3,24 +3,34 @@ import { pool } from "../../../models/index.js";
 import { retrieveUsersByGameId } from "../../../models/gamePlayers.js";
 import {
   retrieveCurrentGameByTableId,
-  retrieveGoalsByGameId,
+  retrieveGoalsPerTeamByGameId,
+  retrieveGoalsPerUserByGameId,
   scoreGoal,
+  setGameEnded,
 } from "../../../models/games.js";
+// eslint-disable-next-line no-unused-vars
+import { Client } from "pg";
+// eslint-disable-next-line no-unused-vars
+import { Server, Socket } from "socket.io";
 
 const GOAL_COOLDOWN_MS = 5000;
+const GOALS_TO_WIN = 10;
 
-const goalScored = async (socket, tableId) => {
+const goalScored = async (io, socket, tableId) => {
   const client = await pool.connect();
 
   try {
     await client.query("BEGIN");
 
-    const updatedGameId = await handleGoalScored(client, socket, tableId);
+    const updatedGoals = await handleGoalScored(client, io, socket, tableId);
 
-    await client.query("COMMIT");
-
-    const roomName = `table-${tableId}`;
-    if (updatedGameId) await emitGoalUpdate(socket, roomName, updatedGameId);
+    if (updatedGoals) {
+      await client.query("COMMIT");
+      const roomName = `table-${tableId}`;
+      await emitGoalUpdate(io, roomName, updatedGoals);
+    } else {
+      await client.query("ROLLBACK");
+    }
   } catch (error) {
     console.error("Error handling goalScored:", error);
     await client.query("ROLLBACK");
@@ -30,7 +40,15 @@ const goalScored = async (socket, tableId) => {
   }
 };
 
-async function handleGoalScored(client, socket, tableId) {
+/**
+ *
+ * @param {Server} io
+ * @param {Client} client
+ * @param {Socket} socket
+ * @param {string} tableId
+ * @returns the updated goals if successful, undefined otherwise
+ */
+async function handleGoalScored(client, io, socket, tableId) {
   const now = new Date();
   const session = socket.request.session;
 
@@ -38,7 +56,6 @@ async function handleGoalScored(client, socket, tableId) {
 
   // game is not active
   if (!game || game.status !== "active") {
-    await client.query("ROLLBACK");
     return;
   }
 
@@ -46,13 +63,11 @@ async function handleGoalScored(client, socket, tableId) {
   const gamePlayer = gamePlayers.find((p) => p.user_id === session.userId);
   // user is not in-game
   if (!gamePlayer) {
-    await client.query("ROLLBACK");
     return;
   }
 
   // no goal has been scored in the last GOAL_COOLDOWN_MS milliseconds
   if (now - new Date(game.last_goal_time) < GOAL_COOLDOWN_MS) {
-    await client.query("ROLLBACK");
     return;
   }
 
@@ -63,14 +78,29 @@ async function handleGoalScored(client, socket, tableId) {
     throw new Error("Game not found or not active when scoring!");
   }
 
-  return updatedGame.id;
+  // check if the game has been won
+  const goals = await retrieveGoalsPerTeamByGameId(client, game.id);
+  if (goals.black === GOALS_TO_WIN || goals.white === GOALS_TO_WIN) {
+    await setGameEnded(client, game.id);
+
+    const roomName = `table-${tableId}`;
+    await emitGoalUpdate(io, roomName, goals);
+    const goalsPerUser = await retrieveGoalsPerUserByGameId(client, game.id);
+    io.to(roomName).emit("gameOver", {
+      winnerTeam: goals.black === GOALS_TO_WIN ? "black" : "white",
+      stats: {
+        goalsPerUser,
+      },
+    });
+
+    io.in(roomName).disconnectSockets();
+  }
+
+  return goals;
 }
 
-export const emitGoalUpdate = async (socket, roomName, gameId) => {
-  const goalUpdate = await retrieveGoalsByGameId(pool, gameId);
-
-  socket.to(roomName).emit("goalUpdate", goalUpdate);
-  socket.emit("goalUpdate", goalUpdate);
+export const emitGoalUpdate = async (io, roomName, goals) => {
+  io.to(roomName).emit("goalUpdate", goals);
 };
 
 export default goalScored;

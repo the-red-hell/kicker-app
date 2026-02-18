@@ -7,20 +7,21 @@ import {
 import {
   createGame,
   retrieveCurrentGameByTableId,
+  retrieveGoalsPerTeamByGameId,
   setGameStarted,
 } from "../../../models/games.js";
 import { pool } from "../../../models/index.js";
 import { validateTeamAndPos } from "./socket.js";
 import { emitGoalUpdate } from "./goalScored.js";
 
-const joinGame = async (socket, tableId, position, team) => {
+const joinGame = async (io, socket, tableId, position, team) => {
   validateTeamAndPos(socket, team, position);
 
   const client = await pool.connect();
   await client.query("BEGIN");
 
   try {
-    await handleJoinGame(client, socket, tableId, position, team);
+    await handleJoinGame(client, io, socket, tableId, position, team);
     await client.query("COMMIT");
   } catch (error) {
     console.error("Error handling joinGame:", error);
@@ -54,7 +55,7 @@ const joinGame = async (socket, tableId, position, team) => {
  * @param {string} position
  * @param {string} team
  */
-async function handleJoinGame(client, socket, tableId, position, team) {
+async function handleJoinGame(client, io, socket, tableId, position, team) {
   const session = socket.request.session;
 
   const game = await createAndGetGameIfNotExists(
@@ -72,7 +73,8 @@ async function handleJoinGame(client, socket, tableId, position, team) {
   if (game.status === "active") {
     socket.emit("currentPlayers", users); // send to the user who just joined
     socket.emit("gameStarted");
-    await emitGoalUpdate(socket, roomName, game.id); // we just send it to everyone...
+    const goals = await retrieveGoalsPerTeamByGameId(client, game.id);
+    socket.emit("goalUpdate", goals);
     return;
   }
 
@@ -82,7 +84,7 @@ async function handleJoinGame(client, socket, tableId, position, team) {
   // start game if there are 4 players
   if (updatedUsers.length === 2) {
     // TODO: set to 4
-    await startGame(client, socket, game.id, roomName);
+    await startGame(client, io, game.id, roomName);
   }
 }
 
@@ -133,11 +135,11 @@ async function emitUserUpdate(client, socket, roomName, gameId) {
   return users;
 }
 
-async function startGame(client, socket, gameId, roomName) {
+async function startGame(client, io, gameId, roomName) {
   await setGameStarted(client, gameId);
-  socket.to(roomName).emit("gameStarted");
-  socket.emit("gameStarted");
-  await emitGoalUpdate(socket, roomName, gameId);
+  io.to(roomName).emit("gameStarted");
+  const goals = await retrieveGoalsPerTeamByGameId(client, gameId);
+  await emitGoalUpdate(io, roomName, goals);
 }
 
 export default joinGame;
