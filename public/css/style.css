@@ -6,8 +6,8 @@ body {
 }
 
 header {
-  background-color: #0a7100;
-  padding: 2vw;
+  background-color: #303030;
+  padding: 2vh;
 }
 
 #iconList {
@@ -18,20 +18,31 @@ header {
   margin: 0; 
   padding: 0; 
   width: 100%;
-  gap: 25px
+  gap: 25px;
 }
 
 .logInOut {
-  flex-grow: 1;
   text-align: right;
+  display: block;
+  background-color: #00BF63;
+  padding: 14px 16px;
+  text-decoration: none;
+}
+
+.logInOut:hover {
+  background-color: #208051;
+}
+
+#spacer {
+  flex-grow: 1;
 }
 
 #profile{
-  height: 60px;
+  height: 7vh;
 }
 
 #logo {
-  height: 120px;
+  height: 7vh;
 }
 
 #pageContent {
