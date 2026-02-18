@@ -11,7 +11,7 @@ const JOIN_PATH = "/game";
  *
  * @param {Request} req request with params tableId and query params position and team
  * @param {Response} res
- * @returns qr code data and image as base64 string
+ * @returns qr code image as PNG
  */
 export const generateQRCode = async (req, res) => {
   const { tableId } = req.params;
@@ -32,11 +32,21 @@ export const generateQRCode = async (req, res) => {
       return res.status(404).json({ error: "Tisch nicht gefunden" });
     }
 
+    const filename = `table-${tableId}-${team}-${position}.png`;
     const queryParams = new URLSearchParams({ position, team });
     const url = `${req.protocol}://${req.get("host")}${JOIN_PATH}/${tableId}?${queryParams.toString()}`;
-    const image = await QRCode.toDataURL(url);
 
-    return res.json({ url, image });
+    const image = await QRCode.toBuffer(url, {
+      type: "png",
+      width: 500,
+      margin: 2,
+    });
+
+    // set headers for file download
+    res.setHeader("Content-Type", "image/png");
+    res.setHeader("Content-Disposition", `attachment; filename="${filename}"`);
+
+    return res.send(image);
   } catch (error) {
     console.error("Error generating QR code:", error);
     return res.status(500).json({ error: "Interner Serverfehler" });
