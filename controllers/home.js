@@ -5,6 +5,7 @@ import gameRouter from "./game/router.js";
 import authRouter from "./auth/router.js";
 import aboutUs from "./aboutUs.js";
 import profileRouter from "./profile/router.js";
+import termsAndConditions from "./terms.js";
 
 const mainRouter = Router();
 
@@ -22,6 +23,7 @@ mainRouter.use("/profile", profileRouter);
 mainRouter.use("/game", gameRouter);
 mainRouter.use("/api", apiRouter);
 mainRouter.use("/auth", authRouter);
-mainRouter.get("/about-us", aboutUs);
+mainRouter.get("/aboutUs", aboutUs);
+mainRouter.get("/terms", termsAndConditions);
 
 export default mainRouter;
