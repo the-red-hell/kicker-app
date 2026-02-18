@@ -1,4 +1,4 @@
-import { retrieveUsersByGameId } from "../../../../models/gamePlayers";
+import { retrieveUsersByGameId } from "../../../../models/gamePlayers.js";
 import { retrieveCurrentGameByTableId } from "../../../../models/games.js";
 
 export const isUserInGame = async (client, socket, tableId) => {
