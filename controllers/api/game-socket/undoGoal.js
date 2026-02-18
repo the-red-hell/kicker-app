@@ -1,5 +1,6 @@
 import {
   retrieveCurrentGameByTableId,
+  retrieveGoalsPerTeamByGameId,
   undoGoalInGame,
 } from "../../../models/games.js";
 import { pool } from "../../../models/index.js";
@@ -15,21 +16,24 @@ import console from "console";
  * @param {string} tableId
  * @param {string} team
  */
-async function undoGoal(socket, tableId) {
+async function undoGoal(io, socket, tableId) {
   const client = await pool.connect();
   try {
     await client.query("BEGIN");
 
-    const updatedGame = await handleUndoGoal(client, socket, tableId);
+    const updatedGoals = await handleUndoGoal(client, socket, tableId);
 
-    await client.query("COMMIT");
-
-    const roomName = `table-${tableId}`;
-    await emitGoalUpdate(socket, roomName, updatedGame.id);
+    if (updatedGoals) {
+      const roomName = `table-${tableId}`;
+      await emitGoalUpdate(io, roomName, updatedGoals);
+      await client.query("COMMIT");
+    } else {
+      await client.query("ROLLBACK");
+    }
   } catch (error) {
     await client.query("ROLLBACK");
     console.error("Error undoing goal:", error);
-    socket.emit("error", "Fehler beim Rückgängig machen des Tores!"); // TODO
+    socket.emit("error", "Error undoing goal!"); // TODO
   } finally {
     client.release();
   }
@@ -45,7 +49,7 @@ async function undoGoal(socket, tableId) {
  * @param {Socket} socket
  * @param {string} tableId
  * @param {string} team
- * @returns
+ * @returns the updated game if successful, undefined otherwise
  */
 async function handleUndoGoal(client, socket, tableId) {
   const session = socket.request.session;
@@ -54,7 +58,6 @@ async function handleUndoGoal(client, socket, tableId) {
   if (!game || game.status !== "active") {
     // the user should not get to this point with the UI
     socket.emit("error", "Ungültige Anfrage!"); // TODO
-    await client.query("ROLLBACK");
     return;
   }
 
@@ -64,13 +67,13 @@ async function handleUndoGoal(client, socket, tableId) {
 
   // user is not in-game
   if (!user) {
-    await client.query("ROLLBACK"); // TODO
     return game;
   }
 
   // finally, undo the goal
-  const updatedGame = await undoGoalInGame(client, game.id);
-  return updatedGame;
+  await undoGoalInGame(client, game.id);
+  const updatedGoals = await retrieveGoalsPerTeamByGameId(client, game.id);
+  return updatedGoals;
 }
 
 export default undoGoal;

@@ -60,7 +60,7 @@ export const retrieveCurrentGameByTableId = async (client, tableId) => {
  * @param {string} gameId
  * @returns {Promise<{white: number, black: number}>}
  */
-export const retrieveGoalsByGameId = async (client, gameId) => {
+export const retrieveGoalsPerTeamByGameId = async (client, gameId) => {
   const res = await client.query(
     `SELECT team, SUM(goals) as total_goals FROM game_players 
      WHERE game_id = $1
@@ -73,6 +73,26 @@ export const retrieveGoalsByGameId = async (client, gameId) => {
     goals[row.team] = parseInt(row.total_goals, 10);
   });
   return goals;
+};
+
+/**
+ *
+ * @param {Client} client
+ * @param {string} gameId
+ * @returns {Promise<Array<{username: string, goals: number}>>}
+ */
+export const retrieveGoalsPerUserByGameId = async (client, gameId) => {
+  const res = await client.query(
+    `SELECT u.username, gp.goals FROM game_players gp
+     JOIN users u ON gp.user_id = u.id
+     WHERE gp.game_id = $1`,
+    [gameId]
+  );
+
+  return res.rows.map((row) => ({
+    username: row.username,
+    goals: row.goals,
+  }));
 };
 
 /**

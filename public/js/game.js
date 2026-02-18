@@ -50,6 +50,11 @@ socket.on("disconnect", () => {
   // window.location.href = "/game"; // Redirect to lobby on disconnect
 });
 
+socket.on("gameOver", (data) => {
+  console.log("Game over! Winner:", data);
+  // TODO display game over screen with winner and stats
+});
+
 document.getElementById("scoreGoal").addEventListener("click", () => {
   console.log("Score Goal button clicked");
   socket.emit("goalScored", { tableId: TABLE_ID });

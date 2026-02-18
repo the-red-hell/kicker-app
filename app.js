@@ -45,7 +45,7 @@ SOCKET_IO.use((socket, next) => {
 });
 
 APP.use("/", mainRouter);
-SOCKET_IO.on("connection", gameSocket);
+SOCKET_IO.on("connection", (socket) => gameSocket(SOCKET_IO, socket));
 
 SERVER.listen(PORT, () => {
   console.log(

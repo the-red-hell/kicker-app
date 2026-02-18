@@ -1,18 +1,17 @@
 import console from "console";
 // eslint-disable-next-line no-unused-vars
-import { Socket } from "socket.io";
+import { Server, Socket } from "socket.io";
 import joinGame from "./joinGame.js";
 import goalScored from "./goalScored.js";
 import { possiblePositions, possibleTeams } from "../../../models/types.js";
 import undoGoal from "./undoGoal.js";
 
 /**
- *
+ * @param {Server} io
  * @param {Socket} socket
  */
-const gameSocket = (socket) => {
+const gameSocket = (io, socket) => {
   const session = socket.request.session;
-  console.log("A user connected to the game socket, ", session);
 
   if (!session || !session.userId) {
     console.log("Unauthenticated user attempted to connect to game socket");
@@ -21,15 +20,15 @@ const gameSocket = (socket) => {
   }
 
   socket.on("joinGame", async ({ tableId, team, position }) => {
-    await joinGame(socket, tableId, position, team);
+    await joinGame(io, socket, tableId, position, team);
   });
 
   socket.on("goalScored", async ({ tableId }) => {
-    await goalScored(socket, tableId);
+    await goalScored(io, socket, tableId);
   });
 
   socket.on("undoGoal", async ({ tableId }) => {
-    await undoGoal(socket, tableId);
+    await undoGoal(io, socket, tableId);
   });
 };
 
