@@ -22,22 +22,16 @@ CREATE TABLE IF NOT EXISTS tables (
 CREATE TABLE IF NOT EXISTS games (
     id SERIAL PRIMARY KEY,
     table_id INTEGER NOT NULL REFERENCES tables(id),
-    points_white INTEGER NOT NULL DEFAULT 0,
-    points_black INTEGER NOT NULL DEFAULT 0,
 
     started_at TIMESTAMP,
     ended_at TIMESTAMP,
 
     -- used for cooldown
     last_goal_time TIMESTAMP,
-    last_goal_teams possible_teams[] DEFAULT '{}',
+    last_goal_player_ids INTEGER[] DEFAULT '{}',
 
     status status NOT NULL DEFAULT 'waiting',
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    
-    -- ensures that the length of last_goal_teams matches the total points
-    -- (more of a sanity check than a real constraint, since the application logic should handle this)
-    CONSTRAINT valid_last_goal_team CHECK (array_length(last_goal_teams, 1) = points_white + points_black)
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
 -- M-N relationship between games and players
