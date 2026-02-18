@@ -1,17 +1,17 @@
 import console from "console";
-import { pool } from "../../../models/index.js";
-import { retrieveUsersByGameId } from "../../../models/gamePlayers.js";
+import { pool } from "../../../../models/index.js";
 import {
   retrieveCurrentGameByTableId,
   retrieveGoalsPerTeamByGameId,
   retrieveGoalsPerUserByGameId,
   scoreGoal,
   setGameEnded,
-} from "../../../models/games.js";
+} from "../../../../models/games.js";
 // eslint-disable-next-line no-unused-vars
 import { Client } from "pg";
 // eslint-disable-next-line no-unused-vars
 import { Server, Socket } from "socket.io";
+import { emitGoalUpdate, isUserInGame } from "./common.js";
 
 const GOAL_COOLDOWN_MS = 5000;
 const GOALS_TO_WIN = 10;
@@ -34,7 +34,7 @@ const goalScored = async (io, socket, tableId) => {
   } catch (error) {
     console.error("Error handling goalScored:", error);
     await client.query("ROLLBACK");
-    socket.emit("error", "Fehler beim Verarbeiten des Torerfolgs!");
+    socket.emit("error", "Error handling scoring the goal!");
   } finally {
     client.release();
   }
@@ -52,19 +52,9 @@ async function handleGoalScored(client, io, socket, tableId) {
   const now = new Date();
   const session = socket.request.session;
 
+  if (!(await isUserInGame(client, socket, tableId))) return;
+
   const game = await retrieveCurrentGameByTableId(client, tableId);
-
-  // game is not active
-  if (!game || game.status !== "active") {
-    return;
-  }
-
-  const gamePlayers = await retrieveUsersByGameId(client, game.id);
-  const gamePlayer = gamePlayers.find((p) => p.user_id === session.userId);
-  // user is not in-game
-  if (!gamePlayer) {
-    return;
-  }
 
   // no goal has been scored in the last GOAL_COOLDOWN_MS milliseconds
   if (now - new Date(game.last_goal_time) < GOAL_COOLDOWN_MS) {
@@ -86,6 +76,7 @@ async function handleGoalScored(client, io, socket, tableId) {
     const roomName = `table-${tableId}`;
     await emitGoalUpdate(io, roomName, goals);
     const goalsPerUser = await retrieveGoalsPerUserByGameId(client, game.id);
+
     io.to(roomName).emit("gameOver", {
       winnerTeam: goals.black === GOALS_TO_WIN ? "black" : "white",
       stats: {
@@ -98,9 +89,5 @@ async function handleGoalScored(client, io, socket, tableId) {
 
   return goals;
 }
-
-export const emitGoalUpdate = async (io, roomName, goals) => {
-  io.to(roomName).emit("goalUpdate", goals);
-};
 
 export default goalScored;

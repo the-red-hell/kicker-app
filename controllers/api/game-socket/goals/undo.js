@@ -2,13 +2,12 @@ import {
   retrieveCurrentGameByTableId,
   retrieveGoalsPerTeamByGameId,
   undoGoalInGame,
-} from "../../../models/games.js";
-import { pool } from "../../../models/index.js";
+} from "../../../../models/games.js";
+import { pool } from "../../../../models/index.js";
 // eslint-disable-next-line no-unused-vars
 import { Client } from "pg";
-import { emitGoalUpdate } from "./goalScored.js";
-import { retrieveUsersByGameId } from "../../../models/gamePlayers.js";
 import console from "console";
+import { emitGoalUpdate, isUserInGame } from "./common.js";
 
 /**
  *
@@ -21,14 +20,13 @@ async function undoGoal(io, socket, tableId) {
   try {
     await client.query("BEGIN");
 
-    const updatedGoals = await handleUndoGoal(client, socket, tableId);
-
-    if (updatedGoals) {
+    if (!(await isUserInGame(client, socket, tableId)))
+      await client.query("ROLLBACK");
+    else {
+      const updatedGoals = await handleUndoGoal(client, tableId);
       const roomName = `table-${tableId}`;
       await emitGoalUpdate(io, roomName, updatedGoals);
       await client.query("COMMIT");
-    } else {
-      await client.query("ROLLBACK");
     }
   } catch (error) {
     await client.query("ROLLBACK");
@@ -46,31 +44,13 @@ async function undoGoal(io, socket, tableId) {
  * - if the last goal was scored by the user's team
  *
  * @param {Client} client
- * @param {Socket} socket
  * @param {string} tableId
  * @param {string} team
  * @returns the updated game if successful, undefined otherwise
  */
-async function handleUndoGoal(client, socket, tableId) {
-  const session = socket.request.session;
+async function handleUndoGoal(client, tableId) {
   const game = await retrieveCurrentGameByTableId(client, tableId);
 
-  if (!game || game.status !== "active") {
-    // the user should not get to this point with the UI
-    socket.emit("error", "Ungültige Anfrage!"); // TODO
-    return;
-  }
-
-  // get the user
-  const users = await retrieveUsersByGameId(client, game.id);
-  const user = users.find((p) => p.user_id === session.userId);
-
-  // user is not in-game
-  if (!user) {
-    return game;
-  }
-
-  // finally, undo the goal
   await undoGoalInGame(client, game.id);
   const updatedGoals = await retrieveGoalsPerTeamByGameId(client, game.id);
   return updatedGoals;
