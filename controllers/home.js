@@ -2,7 +2,7 @@ import { Router } from "express";
 import console from "console";
 import apiRouter from "./api/router.js";
 import gameRouter from "./game/router.js";
-import authenticationRouter from "./authentication/router.js";
+import authRouter from "./auth/router.js";
 import aboutUs from "./aboutUs.js";
 import profileRouter from "./profile/router.js";
 
@@ -21,7 +21,7 @@ mainRouter.get("/", (_req, res) => {
 mainRouter.use("/profile", profileRouter);
 mainRouter.use("/game", gameRouter);
 mainRouter.use("/api", apiRouter);
-mainRouter.use("/auth", authenticationRouter);
+mainRouter.use("/auth", authRouter);
 mainRouter.get("/aboutUs", aboutUs);
 
 export default mainRouter;
