@@ -1,14 +1,7 @@
-#outerBox {
-    background-color: #0a7100;
-    padding: 2vw;
-    border-radius: 1vw;
-    border: 0.5vw;
+#Box {
+    padding: 2vh;
+    border-radius: 1vh;
+    border: 0.2vh;
     border-style: solid;
     border-color: black;
-}
-#innerBox {
-    background-color: #eef4ed;
-    padding: 2vw;
-    padding-left: 2vw;
-    border-radius: 1vw;
 }
