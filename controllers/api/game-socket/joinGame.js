@@ -12,7 +12,7 @@ import {
 } from "../../../models/games.js";
 import { pool } from "../../../models/index.js";
 import { validateTeamAndPos } from "./socket.js";
-import { emitGoalUpdate } from "./goalScored.js";
+import { emitGoalUpdate } from "./goals/common.js";
 
 const joinGame = async (io, socket, tableId, position, team) => {
   validateTeamAndPos(socket, team, position);

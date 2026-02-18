@@ -2,9 +2,9 @@ import console from "console";
 // eslint-disable-next-line no-unused-vars
 import { Server, Socket } from "socket.io";
 import joinGame from "./joinGame.js";
-import goalScored from "./goalScored.js";
+import goalScored from "./goals/score.js";
 import { possiblePositions, possibleTeams } from "../../../models/types.js";
-import undoGoal from "./undoGoal.js";
+import undoGoal from "./goals/undo.js";
 
 /**
  * @param {Server} io
