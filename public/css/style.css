@@ -29,6 +29,10 @@ header {
   text-decoration: none;
 }
 
+.logInOut:hover {
+  background-color: #208051;
+}
+
 #spacer {
   flex-grow: 1;
 }
