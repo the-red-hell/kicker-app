@@ -30,7 +30,6 @@
     "express": "^5.2.1",
     "express-session": "^1.19.0",
     "pg": "^8.18.0",
-    "postgres-array": "^3.0.4",
     "pug": "^3.0.3",
     "qrcode": "^1.5.4",
     "socket.io": "^4.8.3"

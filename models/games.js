@@ -1,7 +1,5 @@
 // eslint-disable-next-line no-unused-vars
 import { Client } from "pg";
-import { possibleTeams } from "./types.js";
-import { parse } from "postgres-array";
 
 export const createGame = async (client, tableId) => {
   const res = await client.query(
@@ -19,27 +17,26 @@ export const setGameStarted = async (client, gameId) => {
   return res.rows[0];
 };
 
-export const setGameEnded = async (
-  client,
-  gameId,
-  pointsWhite,
-  pointsBlack
-) => {
+export const setGameEnded = async (client, gameId) => {
   const res = await client.query(
-    "UPDATE games SET ended_at = NOW(), status = 'ended', points_white = $2, points_black = $3 WHERE id = $1 RETURNING *",
-    [gameId, pointsWhite, pointsBlack]
+    "UPDATE games SET ended_at = NOW(), status = 'ended' WHERE id = $1 RETURNING *",
+    [gameId]
   );
   return res.rows[0];
 };
 
-export const scoreGoal = async (client, gameId, team) => {
-  if (!possibleTeams.includes(team)) {
-    throw new Error("Invalid team");
-  }
-  const pointsColumn = team === "white" ? "points_white" : "points_black";
-  const sql = `UPDATE games SET last_goal_time = NOW(), last_goal_teams = array_append(last_goal_teams, $2), ${pointsColumn} = ${pointsColumn} + 1 WHERE id = $1 RETURNING *`;
-  const res = await client.query(sql, [gameId, team]);
-  return res.rows[0];
+export const scoreGoal = async (client, gameId, userId) => {
+  const gamePlayersUpdateRes = await client.query(
+    `UPDATE game_players SET goals = goals + 1 WHERE game_id = $1 AND user_id = $2 RETURNING *`,
+    [gameId, userId]
+  );
+  const gameUpdateSql = `UPDATE games SET last_goal_time = NOW(), last_goal_player_ids = array_append(last_goal_player_ids, $2) WHERE id = $1 RETURNING *`;
+  const gameUpdateRes = await client.query(gameUpdateSql, [
+    gameId,
+    gamePlayersUpdateRes.rows[0].user_id,
+  ]);
+
+  return gameUpdateRes.rows[0];
 };
 
 /**
@@ -61,38 +58,59 @@ export const retrieveCurrentGameByTableId = async (client, tableId) => {
  *
  * @param {Client} client
  * @param {string} gameId
- * @returns array of teams that scored the goals in order, e.g. ["white", "black", "white"]
+ * @returns {Promise<{white: number, black: number}>}
  */
-export const undoGoalInGame = async (client, gameId) => {
-  // first, get the last scoring team
-  const gameRes = await client.query(
-    "SELECT last_goal_teams FROM games WHERE id = $1 FOR UPDATE",
+export const retrieveGoalsByGameId = async (client, gameId) => {
+  const res = await client.query(
+    `SELECT team, SUM(goals) as total_goals FROM game_players 
+     WHERE game_id = $1
+     GROUP BY team`,
     [gameId]
   );
 
-  const lastGoalTeam = pgToJsArray(gameRes.rows[0].last_goal_teams).pop();
-  if (!lastGoalTeam) {
+  const goals = { white: 0, black: 0 };
+  res.rows.forEach((row) => {
+    goals[row.team] = parseInt(row.total_goals, 10);
+  });
+  return goals;
+};
+
+/**
+ *
+ * @param {Client} client
+ * @param {string} gameId
+ * @returns array of teams that scored the goals in order, e.g. ["white", "black", "white"]
+ */
+export const undoGoalInGame = async (client, gameId) => {
+  // first, get the last scoring game_player
+  const gameRes = await client.query(
+    "SELECT last_goal_player_ids FROM games WHERE id = $1 FOR UPDATE",
+    [gameId]
+  );
+
+  const lastGoalGamePlayerId = gameRes.rows[0].last_goal_player_ids.pop();
+  if (!lastGoalGamePlayerId) {
     // no goals to undo
     return gameRes.rows[0];
   }
 
-  const pointsColumn =
-    lastGoalTeam === "white" ? "points_white" : "points_black";
+  // update the game_player's goals
+  await client.query(
+    `UPDATE game_players 
+     SET goals = goals - 1 
+     WHERE game_id = $1 AND user_id = $2
+     RETURNING *`,
+    [gameId, lastGoalGamePlayerId]
+  );
 
-  // finally, update the game
-  const res = await client.query(
+  // update the game
+  const updateGames = await client.query(
     `UPDATE games 
      SET 
-       last_goal_teams = last_goal_teams[1:array_length(last_goal_teams, 1)-1],
-       ${pointsColumn} = ${pointsColumn} - 1
+       last_goal_player_ids = last_goal_player_ids[1:array_length(last_goal_player_ids, 1)-1]
      WHERE id = $1 
      RETURNING *`, // postgresql arrays start at 1
     [gameId]
   );
-  return res.rows[0];
-};
-
-export const pgToJsArray = (pgArray) => {
-  if (!pgArray) return [];
-  return parse(pgArray);
+  return updateGames.rows[0];
 };

@@ -1,7 +1,4 @@
-// eslint-disable-next-line no-unused-vars
-import { Socket } from "socket.io";
 import {
-  pgToJsArray,
   retrieveCurrentGameByTableId,
   undoGoalInGame,
 } from "../../../models/games.js";
@@ -27,7 +24,8 @@ async function undoGoal(socket, tableId) {
 
     await client.query("COMMIT");
 
-    emitGoalUpdate(socket, tableId, updatedGame);
+    const roomName = `table-${tableId}`;
+    await emitGoalUpdate(socket, roomName, updatedGame.id);
   } catch (error) {
     await client.query("ROLLBACK");
     console.error("Error undoing goal:", error);
@@ -66,13 +64,6 @@ async function handleUndoGoal(client, socket, tableId) {
 
   // user is not in-game
   if (!user) {
-    await client.query("ROLLBACK"); // TODO
-    return game;
-  }
-
-  // goal is not from team
-  if (user.team !== pgToJsArray(game.last_goal_teams).pop()) {
-    socket.emit("error", "Das letzte Tor ist nicht von deinem Team.");
     await client.query("ROLLBACK"); // TODO
     return game;
   }
