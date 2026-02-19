@@ -1,13 +1,34 @@
 extends ../layout
 
+block append css
+    link(rel="stylesheet", href="/static/css/activeGame.css")
+
 block content
     script.
         window.TABLE_ID = "#{tableId}";
         window.TEAM = "#{team}";
         window.POSITION = "#{position}";
     script(type="module" src="/static/js/game.js")
-    p Game, #{tableId}, #{team}, #{position}
 
+    .container
+        .game-container
+            .score-container
+                .score#score-black
+                    span.team-name Black
+                    span.goals 0
+                .score#score-white
+                    span.team-name White
+                    span.goals 0
+            
+            .info-container
+                p Your are on team 
+                    strong #{team}
+                    |  and your position is 
+                    strong #{position}
+                    | .
 
-    button#scoreGoal(type="button") Score Goal
-    button#undoGoal(type="button") Undo Goal
+            .controls-container
+                button#scoreGoal(type="button") Score Goal
+                button#undoGoal(type="button") Undo Goal
+                
+    // TODO: error/notification messages
