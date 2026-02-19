@@ -3,7 +3,6 @@ import console from "console";
 import { Server, Socket } from "socket.io";
 import joinGame from "./joinGame.js";
 import goalScored from "./goals/score.js";
-import { possiblePositions, possibleTeams } from "../../../models/types.js";
 import undoGoal from "./goals/undo.js";
 
 /**
@@ -32,11 +31,6 @@ const gameSocket = (io, socket) => {
   });
 };
 
-export const validateTeamAndPos = (socket, team, position) => {
-  if (!possiblePositions.includes(position) || !possibleTeams.includes(team)) {
-    socket.emit("error", "Ungültige Anfrage!"); // TODO
-    socket.disconnect();
-  }
-};
+export const getRoomName = (tableId) => `table-${tableId}`;
 
 export default gameSocket;
