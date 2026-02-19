@@ -10,6 +10,8 @@ console.log(
 
 const socket = io({ path: "/api/game-socket" });
 
+document.getElementById("scoreGoal").classList.add(TEAM);
+
 socket.on("connect", () => {
   console.log("Connected to game socket server");
 
@@ -40,9 +42,10 @@ socket.on("gameStarted", () => {
   // TODO transition to game screen
 });
 
-socket.on("goalUpdate", (gameState) => {
-  console.log("Received goal update:", gameState);
-  // TODO update score and game state in UI
+socket.on("goalUpdate", (gameScore) => {
+  console.log("Received goal update:", gameScore);
+  document.querySelector("#score-black .goals").textContent = gameScore.black;
+  document.querySelector("#score-white .goals").textContent = gameScore.white;
 });
 
 socket.on("disconnect", () => {
