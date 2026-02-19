@@ -11,7 +11,7 @@ import {
   setGameStarted,
 } from "../../../models/games.js";
 import { pool } from "../../../models/index.js";
-import { emitGoalUpdate } from "./goals/common.js";
+import { emitGoalUpdate, hasAnyTeamWon } from "./goals/common.js";
 import { possiblePositions, possibleTeams } from "../../../models/types.js";
 import { getRoomName } from "./socket.js";
 
@@ -76,6 +76,8 @@ async function handleJoinGame(client, io, socket, tableId, position, team) {
     socket.emit("gameStarted");
     const goals = await retrieveGoalsPerTeamByGameId(client, game.id);
     socket.emit("goalUpdate", goals);
+    // if the game is active and any team has already 10 points, it means that it hasn't been confirmed yet
+    if (hasAnyTeamWon(goals)) socket.emit("waitingForConfirmation");
     return;
   }
 

@@ -11,23 +11,28 @@ import {
 import { Client } from "pg";
 // eslint-disable-next-line no-unused-vars
 import { Server, Socket } from "socket.io";
-import { emitGoalUpdate, isUserInGame } from "./common.js";
+import {
+  emitGoalUpdate,
+  GOALS_TO_WIN,
+  hasAnyTeamWon,
+  isUserInGame,
+} from "./common.js";
 import { getRoomName } from "../socket.js";
 
 const GOAL_COOLDOWN_MS = 1000;
-const GOALS_TO_WIN = 10;
 
 const goalScored = async (io, socket, tableId) => {
   const client = await pool.connect();
-
   try {
     await client.query("BEGIN");
 
-    const updatedGoals = await handleGoalScored(client, io, socket, tableId);
+    const result = await handleGoalScored(client, io, socket, tableId);
 
-    if (updatedGoals) {
+    if (result) {
       await client.query("COMMIT");
-      await emitGoalUpdate(io, getRoomName(tableId), updatedGoals);
+      if (!result.gameEnded && result.goals) {
+        await emitGoalUpdate(io, getRoomName(tableId), result.goals);
+      }
     } else {
       await client.query("ROLLBACK");
     }
@@ -46,7 +51,7 @@ const goalScored = async (io, socket, tableId) => {
  * @param {Client} client
  * @param {Socket} socket
  * @param {string} tableId
- * @returns the updated goals if successful, undefined otherwise
+ * @returns {Promise<{goals: {white: number, black: number}, gameEnded: boolean}|undefined>}
  */
 async function handleGoalScored(client, io, socket, tableId) {
   // check if user is part of the game
@@ -61,7 +66,10 @@ async function handleGoalScored(client, io, socket, tableId) {
 
   // check if game is won
   const roomName = getRoomName(tableId);
-  if (await isGameWon(io, client, game.id, roomName)) return;
+  if (await isGameWon(io, client, game.id, roomName))
+    return {
+      gameEnded: true,
+    };
 
   // update the score
   const session = socket.request.session;
@@ -77,7 +85,7 @@ async function handleGoalScored(client, io, socket, tableId) {
   if (hasAnyTeamWon(updatedGoals)) {
     io.to(roomName).emit("waitingForConfirmation");
   }
-  return updatedGoals;
+  return { goals: updatedGoals, gameEnded: false };
 }
 
 async function isGameWon(io, client, gameId, roomName) {
@@ -104,10 +112,6 @@ async function handleEndGame(io, client, goals, gameId, roomName) {
   });
 
   io.in(roomName).disconnectSockets();
-}
-
-function hasAnyTeamWon(goals) {
-  return goals.black === GOALS_TO_WIN || goals.white === GOALS_TO_WIN;
 }
 
 export default goalScored;
