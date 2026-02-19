@@ -56,23 +56,15 @@ socket.on("currentPlayers", (players) => {
 });
 
 socket.on("error", (message) => {
-  const errorMsg = document.querySelector(".errorBox");
-  errorMsg.textContent = message;
-  errorMsg.style.transition = "none";
-  errorMsg.style.opacity = 1;
-
-  setTimeout(() => {
-    errorMsg.style.transition = "opacity 1s ease";
-    errorMsg.style.opacity = 0;
-  }, 3000);
+  showErrorMessage(message);
 });
 
 socket.on("gameStarted", () => {
-  console.log("Game has started!");
   document.querySelectorAll(".hiddenIfGameNotStarted").forEach((el) => {
     el.style.opacity = 1;
   });
-  // TODO transition to game screen
+  toggleControlButtons(true);
+  showPopupMessage("Game Started!");
 });
 
 socket.on("goalUpdate", (gameScore) => {
@@ -81,25 +73,28 @@ socket.on("goalUpdate", (gameScore) => {
 });
 
 socket.on("disconnect", () => {
-  console.log("Disconnected from game socket server");
-  // window.location.href = "/game"; // Redirect to lobby on disconnect
+  showErrorMessage("Disconnected from game socket server");
 });
 
 socket.on("gameOver", (data) => {
   console.log("Game over! Winner:", data);
-  // TODO display game over screen with winner and stats
+  const time = 5000; // Show the message for 5 seconds
+  if (data.winnerTeam === TEAM) {
+    showPopupMessage("Congratulations! Your team won!", time);
+  } else {
+    showPopupMessage("Game Over! Better luck next time!", time);
+  }
+
+  toggleControlButtons(false);
 });
 
 socket.on("waitingForConfirmation", () => {
-  console.log("Waiting for goal confirmation...");
   document.getElementById("scoreGoal").textContent = "Confirm Score";
-  // TODO display confirmation UI
 });
 
 socket.on("undoGoal", () => {
   // we set it back to "Score Goal" because if it was the last goal, the UI would still say "Confirm Score"
   document.getElementById("scoreGoal").textContent = "Score Goal";
-  // TODO update UI to reflect undone goal
 });
 
 document.getElementById("scoreGoal").addEventListener("click", () => {
@@ -109,3 +104,41 @@ document.getElementById("scoreGoal").addEventListener("click", () => {
 document.getElementById("undoGoal").addEventListener("click", () => {
   socket.emit("undoGoal", { tableId: TABLE_ID });
 });
+
+function showErrorMessage(message) {
+  const errorBox = document.querySelector(".errorBox");
+  errorBox.textContent = message;
+  errorBox.style.transition = "none";
+  errorBox.style.opacity = 1;
+
+  setTimeout(() => {
+    errorBox.style.transition = "opacity 1s ease";
+    errorBox.style.opacity = 0;
+  }, 9000);
+}
+
+function showPopupMessage(message, time = 2000) {
+  document.querySelector(".popup").style.animation = `display ${time}ms`;
+
+  document.getElementById("popupMessage").textContent = message;
+
+  setTimeout(() => {
+    document.querySelector(".popup").style.animation = "";
+  }, time);
+}
+
+function toggleControlButtons(show) {
+  const buttons = document.querySelectorAll(".controlButtons");
+  buttons.forEach((button) => {
+    if (show) {
+      button.style.visibility = "visible";
+      button.style.opacity = 1;
+    } else {
+      button.style.opacity = 0;
+
+      setTimeout(() => {
+        button.style.visibility = "hidden";
+      }, 1000);
+    }
+  });
+}

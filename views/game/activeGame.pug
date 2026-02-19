@@ -37,9 +37,12 @@ block content
                     | .
 
             .controls-container
-                button.hiddenIfGameNotStarted#scoreGoal(type="button") Score Goal
-                button.hiddenIfGameNotStarted#undoGoal(type="button") Undo Goal
+                button.controlButtons#scoreGoal(type="button") Score Goal
+                button.controlButtons#undoGoal(type="button") Undo Goal
                 
                 .errorBox
                     p.errorMsg
-                
+    
+    .popup
+        .popup-content
+            h2#popupMessage
