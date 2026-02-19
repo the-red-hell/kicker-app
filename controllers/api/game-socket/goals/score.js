@@ -13,7 +13,7 @@ import { Client } from "pg";
 import { Server, Socket } from "socket.io";
 import { emitGoalUpdate, isUserInGame } from "./common.js";
 
-const GOAL_COOLDOWN_MS = 5000;
+const GOAL_COOLDOWN_MS = 1000;
 const GOALS_TO_WIN = 10;
 
 const goalScored = async (io, socket, tableId) => {
@@ -61,19 +61,13 @@ async function handleGoalScored(client, io, socket, tableId) {
     return;
   }
 
-  // Update the score within the transaction
-  const updatedGame = await scoreGoal(client, game.id, session.userId);
-
-  if (!updatedGame) {
-    throw new Error("Game not found or not active when scoring!");
-  }
-
-  // check if the game has been won
+  // check if game is won
+  const roomName = `table-${tableId}`;
   const goals = await retrieveGoalsPerTeamByGameId(client, game.id);
+
   if (goals.black === GOALS_TO_WIN || goals.white === GOALS_TO_WIN) {
     await setGameEnded(client, game.id);
 
-    const roomName = `table-${tableId}`;
     await emitGoalUpdate(io, roomName, goals);
     const goalsPerUser = await retrieveGoalsPerUserByGameId(client, game.id);
 
@@ -85,9 +79,26 @@ async function handleGoalScored(client, io, socket, tableId) {
     });
 
     io.in(roomName).disconnectSockets();
+    return;
   }
 
-  return goals;
+  // Update the score within the transaction
+  const updatedGame = await scoreGoal(client, game.id, session.userId);
+
+  if (!updatedGame) {
+    throw new Error("Game not found or not active when scoring!");
+  }
+
+  const updatedGoals = await retrieveGoalsPerTeamByGameId(client, game.id);
+
+  // announce that the last goal has to be confirmed
+  if (
+    updatedGoals.black === GOALS_TO_WIN ||
+    updatedGoals.white === GOALS_TO_WIN
+  ) {
+    io.to(roomName).emit("waitingForConfirmation");
+  }
+  return updatedGoals;
 }
 
 export default goalScored;
