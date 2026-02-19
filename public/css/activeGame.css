@@ -115,6 +115,11 @@ button {
   padding: 0.75rem;
 }
 
+.hiddenIfGameNotStarted {
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
 .errorBox {
   background-color: #f8d7da;
   color: #721c24;
