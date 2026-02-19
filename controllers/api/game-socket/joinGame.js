@@ -11,8 +11,9 @@ import {
   setGameStarted,
 } from "../../../models/games.js";
 import { pool } from "../../../models/index.js";
-import { validateTeamAndPos } from "./socket.js";
 import { emitGoalUpdate } from "./goals/common.js";
+import { possiblePositions, possibleTeams } from "../../../models/types.js";
+import { getRoomName } from "./socket.js";
 
 const joinGame = async (io, socket, tableId, position, team) => {
   validateTeamAndPos(socket, team, position);
@@ -64,7 +65,7 @@ async function handleJoinGame(client, io, socket, tableId, position, team) {
     session.userId
   );
 
-  const roomName = `table-${tableId}`;
+  const roomName = getRoomName(tableId);
   socket.join(roomName);
 
   const users = await retrieveUsersByGameId(client, game.id);
@@ -140,6 +141,13 @@ async function startGame(client, io, gameId, roomName) {
   io.to(roomName).emit("gameStarted");
   const goals = await retrieveGoalsPerTeamByGameId(client, gameId);
   await emitGoalUpdate(io, roomName, goals);
+}
+
+function validateTeamAndPos(socket, team, position) {
+  if (!possiblePositions.includes(position) || !possibleTeams.includes(team)) {
+    socket.emit("error", "Ungültige Anfrage!"); // TODO
+    socket.disconnect();
+  }
 }
 
 export default joinGame;

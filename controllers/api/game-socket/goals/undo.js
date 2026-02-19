@@ -10,6 +10,7 @@ import console from "console";
 import { emitGoalUpdate, isUserInGame } from "./common.js";
 // eslint-disable-next-line no-unused-vars
 import { Server } from "socket.io";
+import { getRoomName } from "../socket.js";
 
 /**
  *
@@ -26,7 +27,7 @@ async function undoGoal(io, socket, tableId) {
       await client.query("ROLLBACK");
     else {
       const updatedGoals = await handleUndoGoal(client, tableId);
-      const roomName = `table-${tableId}`;
+      const roomName = getRoomName(tableId);
       await emitGoalUpdate(io, roomName, updatedGoals);
       io.to(roomName).emit("undoGoal");
       await client.query("COMMIT");
