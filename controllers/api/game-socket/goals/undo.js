@@ -8,12 +8,14 @@ import { pool } from "../../../../models/index.js";
 import { Client } from "pg";
 import console from "console";
 import { emitGoalUpdate, isUserInGame } from "./common.js";
+// eslint-disable-next-line no-unused-vars
+import { Server } from "socket.io";
 
 /**
  *
+ * @param {Server} io
  * @param {Socket} socket
  * @param {string} tableId
- * @param {string} team
  */
 async function undoGoal(io, socket, tableId) {
   const client = await pool.connect();
@@ -26,6 +28,7 @@ async function undoGoal(io, socket, tableId) {
       const updatedGoals = await handleUndoGoal(client, tableId);
       const roomName = `table-${tableId}`;
       await emitGoalUpdate(io, roomName, updatedGoals);
+      io.to(roomName).emit("undoGoal");
       await client.query("COMMIT");
     }
   } catch (error) {

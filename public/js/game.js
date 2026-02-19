@@ -55,6 +55,18 @@ socket.on("gameOver", (data) => {
   // TODO display game over screen with winner and stats
 });
 
+socket.on("waitingForConfirmation", () => {
+  console.log("Waiting for goal confirmation...");
+  document.getElementById("scoreGoal").textContent = "Confirm Score";
+  // TODO display confirmation UI
+});
+
+socket.on("undoGoal", () => {
+  console.log("Goal has been undone");
+  document.getElementById("scoreGoal").textContent = "Score Goal";
+  // TODO update UI to reflect undone goal
+});
+
 document.getElementById("scoreGoal").addEventListener("click", () => {
   console.log("Score Goal button clicked");
   socket.emit("goalScored", { tableId: TABLE_ID });
