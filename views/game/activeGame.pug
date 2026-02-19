@@ -15,13 +15,13 @@ block content
             .score-container
                 .score#score-black
                     span.team-name Black
-                    span.goals 0
+                    span.goals /
                     .players#players-black
                         .player.offense ——
                         .player.defense ——
                 .score#score-white
                     span.team-name White
-                    span.goals 0
+                    span.goals /
                     .players#players-white
                         .player.offense ——
                         .player.defense ——
@@ -37,8 +37,8 @@ block content
                     | .
 
             .controls-container
-                button#scoreGoal(type="button") Score Goal
-                button#undoGoal(type="button") Undo Goal
+                button.hiddenIfGameNotStarted#scoreGoal(type="button") Score Goal
+                button.hiddenIfGameNotStarted#undoGoal(type="button") Undo Goal
                 
                 .errorBox
                     p.errorMsg

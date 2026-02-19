@@ -5,10 +5,6 @@ const TABLE_ID = window.TABLE_ID;
 const TEAM = window.TEAM;
 const POSITION = window.POSITION;
 
-console.log(
-  `Joining game with tableId: ${TABLE_ID}, team: ${TEAM}, position: ${POSITION}`
-);
-
 const socket = io({ path: "/api/game-socket" });
 
 document.getElementById("scoreGoal").classList.add(TEAM);
@@ -73,11 +69,13 @@ socket.on("error", (message) => {
 
 socket.on("gameStarted", () => {
   console.log("Game has started!");
+  document.querySelectorAll(".hiddenIfGameNotStarted").forEach((el) => {
+    el.style.opacity = 1;
+  });
   // TODO transition to game screen
 });
 
 socket.on("goalUpdate", (gameScore) => {
-  console.log("Received goal update:", gameScore);
   document.querySelector("#score-black .goals").textContent = gameScore.black;
   document.querySelector("#score-white .goals").textContent = gameScore.white;
 });
