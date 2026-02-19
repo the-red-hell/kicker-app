@@ -12,11 +12,6 @@ header {
   top: 0;
 }
 
-footer {
-  background-color: #adadad;
-  padding: 2vh;
-}
-
 #iconList {
   display: flex; 
   align-items: center; 
@@ -52,11 +47,20 @@ footer {
   height: 7vh;
 }
 
-#footer {
+footer {
   padding-left: 1vw;
   padding-bottom: 2vh;
+  padding-top: 1vh;
+  background-color: #adadad;
 }
 
-#footer {
+@media screen and (max-width: 450px) {
+  .logInOut {
+    display: none;
+  }
   
+  #logo {
+    height: 5vh;
+    transition: height 0.3s;
+  }
 }

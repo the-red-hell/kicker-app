@@ -11,7 +11,7 @@ html
 
     body
       block header
-        header#header
+        header
           nav
             ul#iconList
               li
@@ -30,10 +30,9 @@ html
       main#pageContent
         block content
 
-      div#footer
-        block footer
-          footer#footer
-            p &copy; #{new Date().getFullYear()} Kicker-Tracking App
-            a(href='/about-us') About us
-            br
-            a(href='https://github.com/paulhkz/kicker-app.git' target="_blank") View Source           
+      block footer
+        footer
+          p &copy; #{new Date().getFullYear()} Kicker-Tracking App
+          a(href='/about-us') About us
+          br
+          a(href='https://github.com/paulhkz/kicker-app.git' target="_blank") View Source           
