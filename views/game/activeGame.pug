@@ -16,12 +16,21 @@ block content
                 .score#score-black
                     span.team-name Black
                     span.goals 0
+                    .players#players-black
+                        .player.offense ——
+                        .player.defense ——
                 .score#score-white
                     span.team-name White
                     span.goals 0
+                    .players#players-white
+                        .player.offense ——
+                        .player.defense ——
             
             .info-container
-                p Your are on team 
+                p You are playing on 
+                    strong#tableName
+                    | .
+                    | Your are on team 
                     strong #{team}
                     |  and your position is 
                     strong #{position}
@@ -31,4 +40,6 @@ block content
                 button#scoreGoal(type="button") Score Goal
                 button#undoGoal(type="button") Undo Goal
                 
-    // TODO: error/notification messages
+                .errorBox
+                    p.errorMsg
+                

@@ -9,7 +9,7 @@ export const isUserInGame = async (client, socket, tableId) => {
 
   if (!game || game.status !== "active") {
     // the user should not get to this point with the UI
-    socket.emit("error", "Game not active!"); // TODO
+    socket.emit("error", "Game not active!");
     return false;
   }
 
@@ -19,7 +19,7 @@ export const isUserInGame = async (client, socket, tableId) => {
 
   // user is not in-game
   if (!user) {
-    socket.emit("error", "User not in game!"); // TODO
+    socket.emit("error", "User not in game!");
     return false;
   }
 
