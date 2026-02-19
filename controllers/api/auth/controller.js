@@ -9,7 +9,15 @@ import {
 
 // register a new user and log them in immediately
 export const register = async (req, res) => {
-  const { username, password, email } = req.body;
+  const { username, password, confirmPassword, email, terms } = req.body;
+
+  if (!terms) {
+    return res.status(400).json({ error: "You must agree to the terms and conditions" });
+  }
+
+  if (password !== confirmPassword) {
+    return res.status(400).json({ error: "Passwords do not match" });
+  }
 
   try {
     const hash = await bcrypt.hash(password, 10); // hash password

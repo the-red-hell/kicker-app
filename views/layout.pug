@@ -10,27 +10,30 @@ html
         link(rel='stylesheet' type="text/css" href='/static/css/style.css')
 
     body
-      header#header
-        nav
-          ul#iconList
-            li
-              a(href=loggedIn ? "/dashboard" : "/")
-                img(src='/static/images/KickerAPP_Logo_tbbg.svg' alt='Home')#logo
-            li#spacer
-            li.logInOut
-              if !loggedIn
-                a(href='/auth/login') Login / Register
-              else
-                a(href='/auth/logout') Logout
-            li
-              a(href='/profile')
-                img(src='/static/images/Profile_Icon.png' alt='User')#profile
+      block header
+        header#header
+          nav
+            ul#iconList
+              li
+                a(href=loggedIn ? "/dashboard" : "/")
+                  img(src='/static/images/KickerAPP_Logo_tbbg.svg' alt='Home')#logo
+              li#spacer
+              li.logInOut
+                if !loggedIn
+                  a(href='/auth/login') Login
+                else
+                  a(href='/auth/logout') Logout
+              li
+                a(href='/profile')
+                  img(src='/static/images/Profile_Icon.png' alt='User')#profile
 
       main#pageContent
         block content
 
-      footer#footer
-        p &copy; #{new Date().getFullYear()} Kicker-Tracking App
-        a(href='/about-us') About us
-        br
-        a(href='https://github.com/paulhkz/kicker-app.git' target="_blank") View Source        
+      div#footer
+        block footer
+          footer#footer
+            p &copy; #{new Date().getFullYear()} Kicker-Tracking App
+            a(href='/about-us') About us
+            br
+            a(href='https://github.com/paulhkz/kicker-app.git' target="_blank") View Source           
