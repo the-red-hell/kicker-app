@@ -1,3 +1,4 @@
+/* eslint-disable no-undef */
 import "/api/game-socket/socket.io.js";
 
 const TABLE_ID = window.TABLE_ID;
@@ -15,6 +16,16 @@ document.getElementById("scoreGoal").classList.add(TEAM);
 socket.on("connect", () => {
   console.log("Connected to game socket server");
 
+  fetch(`/api/tables/${TABLE_ID}`)
+    .then((res) => res.json())
+    .then((table) => {
+      document.getElementById("tableName").textContent = table.name;
+    })
+    .catch((error) => {
+      console.error("Error fetching table info:", error);
+      document.getElementById("tableName").textContent = "Unknown Table";
+    });
+
   socket.emit("joinGame", {
     tableId: TABLE_ID,
     team: TEAM,
@@ -24,17 +35,40 @@ socket.on("connect", () => {
 
 socket.on("currentPlayers", (players) => {
   console.log("Current players in the game:", players);
-  // TODO display current players in UI
-});
+  const playerDisplays = {
+    black: {
+      offense: document.querySelector("#players-black .offense"),
+      defense: document.querySelector("#players-black .defense"),
+    },
+    white: {
+      offense: document.querySelector("#players-white .offense"),
+      defense: document.querySelector("#players-white .defense"),
+    },
+  };
 
-socket.on("notification", (message) => {
-  console.log("Received notification:", message);
-  // TODO display notification in UI
+  // Reset player display
+  players.forEach((player) => {
+    if (player.team && player.position && player.username) {
+      const team = player.team;
+      const position = player.position;
+      if (playerDisplays[team] && playerDisplays[team][position]) {
+        playerDisplays[team][position].textContent =
+          `${player.position}: ${player.username}`;
+      }
+    }
+  });
 });
 
 socket.on("error", (message) => {
-  console.error("Received error:", message);
-  // TODO display error in UI
+  const errorMsg = document.querySelector(".errorBox");
+  errorMsg.textContent = message;
+  errorMsg.style.transition = "none";
+  errorMsg.style.opacity = 1;
+
+  setTimeout(() => {
+    errorMsg.style.transition = "opacity 1s ease";
+    errorMsg.style.opacity = 0;
+  }, 3000);
 });
 
 socket.on("gameStarted", () => {
@@ -65,17 +99,15 @@ socket.on("waitingForConfirmation", () => {
 });
 
 socket.on("undoGoal", () => {
-  console.log("Goal has been undone");
+  // we set it back to "Score Goal" because if it was the last goal, the UI would still say "Confirm Score"
   document.getElementById("scoreGoal").textContent = "Score Goal";
   // TODO update UI to reflect undone goal
 });
 
 document.getElementById("scoreGoal").addEventListener("click", () => {
-  console.log("Score Goal button clicked");
   socket.emit("goalScored", { tableId: TABLE_ID });
 });
 
 document.getElementById("undoGoal").addEventListener("click", () => {
-  console.log("Undo Goal button clicked");
   socket.emit("undoGoal", { tableId: TABLE_ID });
 });

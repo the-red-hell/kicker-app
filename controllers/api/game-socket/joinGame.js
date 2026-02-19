@@ -30,15 +30,15 @@ const joinGame = async (io, socket, tableId, position, team) => {
 
     // postgres unique_violation
     if (error.code === "23505") {
-      socket.emit("error", "Zu langsam! Position oder Team bereits besetzt!"); // TODO
+      socket.emit("error", "Too slow! Position or team already taken!");
     } else if (error.message === "GAME_FULL") {
       // game is full
-      socket.emit("error", "Spiel ist voll!"); // TODO
+      socket.emit("error", "Table is already full!");
     } else if (error.message === "GAME_ACTIVE") {
-      socket.emit("error", "Spiel ist bereits aktiv!"); // TODO
+      socket.emit("error", "Game is already active!");
     } else {
       console.error(error);
-      socket.emit("error", "Fehler beim Beitreten des Spiels!"); // TODO
+      socket.emit("error", "Error joining the game!");
     }
 
     socket.disconnect();
@@ -82,7 +82,7 @@ async function handleJoinGame(client, io, socket, tableId, position, team) {
   }
 
   await updateOrAddPlayer(client, game, session.userId, position, team);
-  const updatedUsers = await emitUserUpdate(client, socket, roomName, game.id);
+  const updatedUsers = await emitUserUpdate(client, io, roomName, game.id);
 
   // start game if there are 4 players
   if (updatedUsers.length === 2) {
@@ -130,10 +130,9 @@ function isUserInGame(users, userId) {
   return users.some((p) => p.user_id === userId);
 }
 
-async function emitUserUpdate(client, socket, roomName, gameId) {
+async function emitUserUpdate(client, io, roomName, gameId) {
   const users = await retrieveUsersByGameId(client, gameId);
-  socket.emit("currentPlayers", users); // send to the user who just joined
-  socket.to(roomName).emit("currentPlayers", users); // send to others in the room
+  io.to(roomName).emit("currentPlayers", users); // send to all users in the room
 
   return users;
 }
@@ -147,7 +146,7 @@ async function startGame(client, io, gameId, roomName) {
 
 function validateTeamAndPos(socket, team, position) {
   if (!possiblePositions.includes(position) || !possibleTeams.includes(team)) {
-    socket.emit("error", "Ungültige Anfrage!"); // TODO
+    socket.emit("error", "Invalid request!");
     socket.disconnect();
   }
 }

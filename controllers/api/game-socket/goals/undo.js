@@ -35,7 +35,7 @@ async function undoGoal(io, socket, tableId) {
   } catch (error) {
     await client.query("ROLLBACK");
     console.error("Error undoing goal:", error);
-    socket.emit("error", "Error undoing goal!"); // TODO
+    socket.emit("error", "Error undoing goal!");
   } finally {
     client.release();
   }
