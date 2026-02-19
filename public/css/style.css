@@ -12,6 +12,11 @@ header {
   top: 0;
 }
 
+footer {
+  background-color: #adadad;
+  padding: 2vh;
+}
+
 #iconList {
   display: flex; 
   align-items: center; 
@@ -50,4 +55,8 @@ header {
 #footer {
   padding-left: 1vw;
   padding-bottom: 2vh;
+}
+
+#footer {
+  
 }

@@ -1,5 +1,12 @@
 extends layout
 
+block append css
+    link(rel='stylesheet' type="text/css" href='/static/css/home.css')
+
 block content
-    h1 Welcome to the greatest kicker-tracking app!
-    
+    div.container
+        div
+            img(src='/static/images/hero_shot.png' alt='Hero Shot').heroShot
+
+        div.logIn
+                a(href='/auth/login') Jetzt Anmelden
