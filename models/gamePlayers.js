@@ -44,3 +44,20 @@ export const retrieveUsersByGameId = async (client, gameId) => {
   );
   return res.rows;
 };
+
+/**
+ * @param {Client} client
+ * @param {string} gameId
+ * @param {string} userId
+ */
+export const removeUserFromGame = async (client, gameId, userId) => {
+  await client.query(
+    `DELETE FROM game_players gp
+     USING games g
+     WHERE gp.game_id = g.id
+      AND gp.game_id = $1
+      AND gp.user_id = $2
+      AND g.status = 'waiting'`,
+    [gameId, userId]
+  );
+};

@@ -56,6 +56,7 @@ socket.on("currentPlayers", (players) => {
 });
 
 socket.on("error", (message) => {
+  console.error("Error from server:", message);
   showErrorMessage(message);
 });
 
@@ -106,15 +107,14 @@ document.getElementById("undoGoal").addEventListener("click", () => {
 });
 
 function showErrorMessage(message) {
-  const errorBox = document.querySelector(".errorBox");
-  errorBox.textContent = message;
-  errorBox.style.transition = "none";
-  errorBox.style.opacity = 1;
+  const errorBox = document.getElementById("errorBox");
+
+  const child = errorBox.appendChild(document.createElement("p"));
+  child.classList.add("errorMsg");
+  child.textContent = message;
 
   setTimeout(() => {
-    errorBox.style.transition = "opacity 1s ease";
-    errorBox.style.opacity = 0;
-    errorBox.textContent = "";
+    child.remove();
   }, 9000);
 }
 
