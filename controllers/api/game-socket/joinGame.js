@@ -16,6 +16,8 @@ import { emitGoalUpdate, hasAnyTeamWon } from "./goals/common.js";
 import { possiblePositions, possibleTeams } from "../../../models/types.js";
 import { getRoomName } from "./socket.js";
 import { retrieveStatusTablesByUserId } from "../../../models/tables.js";
+// eslint-disable-next-line no-unused-vars
+import { Client } from "pg";
 
 const joinGame = async (io, socket, tableId, position, team) => {
   validateTeamAndPos(socket, team, position);
@@ -44,6 +46,8 @@ const joinGame = async (io, socket, tableId, position, team) => {
     }
 
     socket.disconnect();
+  } finally {
+    client.release();
   }
 };
 
@@ -61,41 +65,26 @@ const joinGame = async (io, socket, tableId, position, team) => {
 async function handleJoinGame(client, io, socket, tableId, position, team) {
   const session = socket.request.session;
 
-  // first, check whether the user is already in another game
-  const activeTable = (
-    await retrieveStatusTablesByUserId(client, "active", session.userId)
-  )[0];
+  // first, check whether the user is already on another table
+  if (await handleUserAlreadyPlaying(client, socket, tableId, session)) return;
 
-  if (activeTable && activeTable.id != tableId) {
-    socket.emit(
-      "error",
-      `You are already in a game on table ${activeTable.name}! Please finish it before joining another one.`
-    );
-    socket.disconnect();
-    return;
+  const game = await createAndGetGameIfNotExists(client, tableId);
+  const users = await retrieveUsersByGameId(client, game?.id);
+
+  // is game already active?
+  const isGameActive = game && game.status === "active";
+  if (isGameActive && !isUserInGame(users, session.userId)) {
+    throw new Error("GAME_ACTIVE");
   }
-
-  const game = await createAndGetGameIfNotExists(
-    client,
-    tableId,
-    session.userId
-  );
 
   const roomName = getRoomName(tableId);
   socket.join(roomName);
 
-  const users = await retrieveUsersByGameId(client, game.id);
+  // send current players out, no matter if the user is obligated to join
+  // (if your position is taken, you gotta know whom to blame)
+  socket.emit("currentPlayers", users);
 
-  // game is active, user is rejoining after refresh, we just emit the current player list and game state to the user
-  if (game.status === "active") {
-    socket.emit("currentPlayers", users); // send to the user who just joined
-    socket.emit("gameStarted");
-    const goals = await retrieveGoalsPerTeamByGameId(client, game.id);
-    socket.emit("goalUpdate", goals);
-    // if the game is active and any team has already 10 points, it means that it hasn't been confirmed yet
-    if (hasAnyTeamWon(goals)) socket.emit("waitingForConfirmation");
-    return;
-  }
+  await handleUserRefresh(client, socket, game);
 
   await updateOrAddPlayer(client, game, session.userId, position, team);
   const updatedUsers = await emitUserUpdate(client, io, roomName, game.id);
@@ -107,22 +96,54 @@ async function handleJoinGame(client, io, socket, tableId, position, team) {
   }
 }
 
-async function createAndGetGameIfNotExists(client, tableId, userId) {
+async function handleUserAlreadyPlaying(client, socket, tableId, session) {
+  const activeTable = (
+    await retrieveStatusTablesByUserId(client, "active", session.userId)
+  )[0];
+
+  if (activeTable && activeTable.id != tableId) {
+    socket.emit(
+      "error",
+      `You are already in a game on table ${activeTable.name}! Please finish it before joining another one.`
+    );
+    socket.disconnect();
+  }
+}
+
+/**
+ * If the game doesn't exist, creates one
+ * If it does, returns the current waiting game or even the active one if the user is in-game
+ *
+ * @param {Client} client
+ * @param {string} tableId
+ * @param {string} userId
+ * @returns
+ */
+async function createAndGetGameIfNotExists(client, tableId) {
   const game = await retrieveCurrentGameByTableId(client, tableId);
-  const users = await retrieveUsersByGameId(client, game?.id);
   const doesGameExist = !!game;
-  const isGameActive = game && game.status === "active";
 
   // if there's no started game, we start a new one
   // if there is an active game, we don't allow joining unless the user is already in the game (rejoining after refresh)
   // only if the game is in state 'waiting' we allow joining
   if (!doesGameExist) {
     return await createGame(client, tableId);
-  } else if (isGameActive && !isUserInGame(users, userId)) {
-    throw new Error("GAME_ACTIVE");
   }
-
   return game;
+}
+
+/**
+ * game is active, user is rejoining after refresh, we just emit the current player list and game state to the user
+ */
+async function handleUserRefresh(client, socket, game) {
+  if (game.status === "active") {
+    socket.emit("gameStarted");
+    const goals = await retrieveGoalsPerTeamByGameId(client, game.id);
+    socket.emit("goalUpdate", goals);
+    // if the game is active and any team has already 10 points, it means that it hasn't been confirmed yet
+    if (hasAnyTeamWon(goals)) socket.emit("waitingForConfirmation");
+    return;
+  }
 }
 
 async function updateOrAddPlayer(client, game, userId, position, team) {
