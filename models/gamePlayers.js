@@ -33,7 +33,7 @@ export const updateUserFromGame = async (
  *
  * @param {Client} client
  * @param {string} gameId
- * @returns {Promise<Array>} an array of users in the game
+ * @returns {Promise<Array<{ id: string, user_id: string, position: string, team: string, goals: number, username: string }>>} an array of users in the game
  */
 export const retrieveUsersByGameId = async (client, gameId) => {
   const res = await client.query(

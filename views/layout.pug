@@ -11,7 +11,7 @@ html
 
     body
       block header
-        header#header
+        header
           nav
             ul#iconList
               li
@@ -20,9 +20,9 @@ html
               li#spacer
               li.logInOut
                 if !loggedIn
-                  a(href='/auth/login') Login
+                  button(onclick="window.location.href='/auth/login';") Login
                 else
-                  a(href='/auth/logout') Logout
+                  button(onclick="window.location.href='/auth/logout';") Logout
               li
                 a(href='/profile')
                   img(src='/static/images/Profile_Icon.png' alt='User')#profile
@@ -30,10 +30,9 @@ html
       main#pageContent
         block content
 
-      div#footer
-        block footer
-          footer#footer
-            p &copy; #{new Date().getFullYear()} Kicker-Tracking App
-            a(href='/about-us') About us
-            br
-            a(href='https://github.com/paulhkz/kicker-app.git' target="_blank") View Source           
+      block footer
+        footer
+          p &copy; #{new Date().getFullYear()} Kicker-Tracking App
+          a(href='/about-us') About us
+          br
+          a(href='https://github.com/paulhkz/kicker-app.git' target="_blank") View Source           

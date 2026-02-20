@@ -12,28 +12,29 @@ header {
   top: 0;
 }
 
-footer {
-  background-color: #adadad;
-  padding: 2vh;
-}
-
 #iconList {
-  display: flex; 
-  align-items: center; 
-  justify-content: space-between; 
-  list-style: none; 
-  margin: 0; 
-  padding: 0; 
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  list-style: none;
+  margin: 0;
+  padding: 0;
   width: 100%;
   gap: 25px;
 }
 
-.logInOut {
-  text-align: right;
+.logInOut button {
+  font-size: 1rem;
+  font-weight: bold;
+  background-color: #00bf63;
+  color: #f8f9fa;
+
   display: block;
-  background-color: #00BF63;
   padding: 14px 16px;
-  text-decoration: none;
+  border: none;
+  border-radius: 4px;
+
+  cursor: pointer;
 }
 
 .logInOut:hover {
@@ -44,7 +45,7 @@ footer {
   flex-grow: 1;
 }
 
-#profile{
+#profile {
   height: 7vh;
 }
 
@@ -52,6 +53,18 @@ footer {
   height: 7vh;
 }
 
-#footer {
+footer {
+  padding-left: 3vw;
   padding-bottom: 2vh;
+  padding-top: 1vh;
+  background-color: #adadad;
+  position: fixed;
+  bottom: 0;
+  width: 100%;
+}
+
+@media screen and (max-width: 450px) {
+  .logInOut {
+    display: none;
+  }
 }

@@ -6,7 +6,7 @@ const tablesRouter = Router();
 
 tablesRouter.use(checkAuthenticationMiddleware);
 
-tablesRouter.get("/", getTables);
+tablesRouter.get("/:tableId", getTables);
 tablesRouter.get("/:tableId/qr-code/", generateQRCode);
 
 export default tablesRouter;
