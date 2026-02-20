@@ -3,6 +3,7 @@ import QRCode from "qrcode";
 import { retrieveTableById } from "../../../models/tables.js";
 import { URLSearchParams } from "url";
 import { possiblePositions, possibleTeams } from "../../../models/types.js";
+import { pool } from "../../../models/index.js";
 
 const JOIN_PATH = "/game";
 
@@ -16,6 +17,7 @@ const JOIN_PATH = "/game";
 export const generateQRCode = async (req, res) => {
   const { tableId } = req.params;
   const { position, team } = req.query;
+  const client = await pool.connect();
   try {
     // position doesn't exist
     if (!possiblePositions.includes(position)) {
@@ -27,7 +29,7 @@ export const generateQRCode = async (req, res) => {
     }
 
     // table doesn't exist
-    const table = await retrieveTableById(tableId);
+    const table = await retrieveTableById(client, tableId);
     if (!table) {
       return res.status(404).json({ error: "Table not found" });
     }
@@ -50,13 +52,16 @@ export const generateQRCode = async (req, res) => {
   } catch (error) {
     console.error("Error generating QR code:", error);
     return res.status(500).json({ error: "Internal Server Error" });
+  } finally {
+    client.release();
   }
 };
 
 export const getTables = async (req, res) => {
+  const client = await pool.connect();
   try {
     const { tableId } = req.params;
-    const table = await retrieveTableById(tableId);
+    const table = await retrieveTableById(client, tableId);
     if (!table) {
       return res.status(404).json({ error: "Table not found" });
     }
@@ -64,5 +69,7 @@ export const getTables = async (req, res) => {
   } catch (error) {
     console.error("Error retrieving tables:", error);
     return res.status(500).json({ error: "Internal Server Error" });
+  } finally {
+    client.release();
   }
 };

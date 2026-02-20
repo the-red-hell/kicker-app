@@ -12,31 +12,39 @@ import { possiblePositions, possibleTeams } from "../../models/types.js";
  * @param {Response} res
  */
 export const joinGame = async (req, res) => {
-  const { tableId } = req.params;
-  let { position, team } = req.query;
-  // is the link valid
-  if (!possiblePositions.includes(position) || !possibleTeams.includes(team)) {
-    return res.status(400).send("Ungültiger link!"); // TODO
-  }
-  // does the table exist
-  if (!tableId || !(await retrieveTableById(tableId))) {
-    return res.status(404).send("Tisch nicht gefunden!"); // TODO
-  }
+  const client = await pool.connect();
+  try {
+    const { tableId } = req.params;
+    let { position, team } = req.query;
+    // is the link valid
+    if (
+      !possiblePositions.includes(position) ||
+      !possibleTeams.includes(team)
+    ) {
+      return res.status(400).send("Ungültiger link!"); // TODO
+    }
+    // does the table exist
+    if (!tableId || !(await retrieveTableById(client, tableId))) {
+      return res.status(404).send("Tisch nicht gefunden!"); // TODO
+    }
 
-  const userInGame = await canUserJoin(
-    tableId,
-    req.session.userId,
-    position,
-    team
-  );
-  if (userInGame === false) {
-    return res.status(400).send("Position bereits besetzt!"); // TODO
-  } else if (userInGame) {
-    position = userInGame.position;
-    team = userInGame.team;
-  }
+    const userInGame = await canUserJoin(
+      tableId,
+      req.session.userId,
+      position,
+      team
+    );
+    if (userInGame === false) {
+      return res.status(400).send("Position bereits besetzt!"); // TODO
+    } else if (userInGame) {
+      position = userInGame.position;
+      team = userInGame.team;
+    }
 
-  res.render("game/activeGame", { title: "Game", tableId, position, team });
+    res.render("game/activeGame", { title: "Game", tableId, position, team });
+  } finally {
+    client.release();
+  }
 };
 
 /**
