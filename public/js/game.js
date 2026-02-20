@@ -73,7 +73,7 @@ socket.on("goalUpdate", (gameScore) => {
 });
 
 socket.on("disconnect", () => {
-  showErrorMessage("Disconnected from game socket server");
+  showErrorMessage("Disconnected from game.");
 });
 
 socket.on("gameOver", (data) => {
@@ -114,6 +114,7 @@ function showErrorMessage(message) {
   setTimeout(() => {
     errorBox.style.transition = "opacity 1s ease";
     errorBox.style.opacity = 0;
+    errorBox.textContent = "";
   }, 9000);
 }
 
@@ -124,6 +125,7 @@ function showPopupMessage(message, time = 2000) {
 
   setTimeout(() => {
     document.querySelector(".popup").style.animation = "";
+    document.getElementById("popupMessage").textContent = "";
   }, time);
 }
 
