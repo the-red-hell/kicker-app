@@ -143,4 +143,5 @@ function toggleControlButtons(show) {
       }, 1000);
     }
   });
+  document.getElementById("isPlaying").textContent = show ? "playing" : "";
 }
