@@ -11,8 +11,8 @@ export const createTable = async (name, location) => {
   return result.rows[0];
 };
 
-export const retrieveTableById = async (id) => {
-  const res = await query("SELECT * FROM tables WHERE id = $1", [id]);
+export const retrieveTableById = async (client, id) => {
+  const res = await client.query("SELECT * FROM tables WHERE id = $1", [id]);
   return res.rows[0];
 };
 
