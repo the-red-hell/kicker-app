@@ -1,3 +1,3 @@
-export const possiblePositions = ["attack", "defense"];
+export const possiblePositions = ["offense", "defense"];
 
 export const possibleTeams = ["white", "black"];

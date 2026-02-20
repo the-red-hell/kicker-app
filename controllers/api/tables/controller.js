@@ -1,6 +1,6 @@
 import console from "console";
 import QRCode from "qrcode";
-import { retrieveTableById, retrieveTables } from "../../../models/tables.js";
+import { retrieveTableById } from "../../../models/tables.js";
 import { URLSearchParams } from "url";
 import { possiblePositions, possibleTeams } from "../../../models/types.js";
 
@@ -55,8 +55,12 @@ export const generateQRCode = async (req, res) => {
 
 export const getTables = async (req, res) => {
   try {
-    const tables = await retrieveTables();
-    return res.json(tables);
+    const { tableId } = req.params;
+    const table = await retrieveTableById(tableId);
+    if (!table) {
+      return res.status(404).json({ error: "Table not found" });
+    }
+    return res.json(table);
   } catch (error) {
     console.error("Error retrieving tables:", error);
     return res.status(500).json({ error: "Internal Server Error" });
