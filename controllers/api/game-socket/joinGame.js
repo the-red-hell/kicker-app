@@ -1,6 +1,7 @@
 import console from "console";
 import {
   addUserToGame,
+  removeUserFromGame,
   retrieveUsersByGameId,
   updateUserFromGame,
 } from "../../../models/gamePlayers.js";
@@ -14,6 +15,7 @@ import { pool } from "../../../models/index.js";
 import { emitGoalUpdate, hasAnyTeamWon } from "./goals/common.js";
 import { possiblePositions, possibleTeams } from "../../../models/types.js";
 import { getRoomName } from "./socket.js";
+import { retrieveStatusTablesByUserId } from "../../../models/tables.js";
 
 const joinGame = async (io, socket, tableId, position, team) => {
   validateTeamAndPos(socket, team, position);
@@ -52,12 +54,26 @@ const joinGame = async (io, socket, tableId, position, team) => {
  * - emits the updated player list to all users in the game room
  *
  * @param {Socket} socket
- * @param {string} tableId
+ * @param {number} tableId
  * @param {string} position
  * @param {string} team
  */
 async function handleJoinGame(client, io, socket, tableId, position, team) {
   const session = socket.request.session;
+
+  // first, check whether the user is already in another game
+  const activeTable = (
+    await retrieveStatusTablesByUserId(client, "active", session.userId)
+  )[0];
+
+  if (activeTable && activeTable.id != tableId) {
+    socket.emit(
+      "error",
+      `You are already in a game on table ${activeTable.name}! Please finish it before joining another one.`
+    );
+    socket.disconnect();
+    return;
+  }
 
   const game = await createAndGetGameIfNotExists(
     client,
@@ -122,6 +138,12 @@ async function updateOrAddPlayer(client, game, userId, position, team) {
   if (isUserInGame(users, userId)) {
     return await updateUserFromGame(client, game.id, userId, position, team);
   } else {
+    const waitingTable = (
+      await retrieveStatusTablesByUserId(client, "waiting", userId)
+    )[0];
+    if (waitingTable && waitingTable.id !== game.table_id) {
+      await removeUserFromGame(client, waitingTable.id, userId);
+    }
     return await addUserToGame(client, game.id, userId, position, team);
   }
 }
