@@ -1,22 +1,51 @@
 .container {
+  padding: 2vh;
+  gap: 3vh;
+
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 2vh;
+
 }
 
 .heroShot {
-  width: 50%;
-  padding: 16px;
-  margin: 0 auto;
+  width: 100%;
+
   display: block;
 }
 
 .logIn {
-  text-align: center;
-  display: block;
-  background-color: #00BF63;
+  width: 80%;
   padding: 14px 16px;
-  width: 30%;
-  text-decoration: none;
+
+  display: flex;
+  text-align: center;
+  justify-content: center;
+
+  background-color: #00BF63;
+}
+
+.leaderboard {
+    width: 80%;
+
+    display: flex;
+    justify-content: center;
+}
+
+.callToAction {
+    width: 80%;
+    gap: 3vh;
+
+    display: flex;
+    justify-content: center;
+    flex-direction: column;
+}
+
+.callToActionButton {
+    padding: 14px 16px;
+
+    text-align: center;
+    text-size-adjust: 150%;
+
+    background-color: #00BF63;
 }
