@@ -19,7 +19,7 @@ export const isUserInGame = async (client, socket, tableId) => {
 
   // user is not in-game
   if (!user) {
-    socket.emit("error", "User not in game!");
+    socket.emit("error", "You are not in the game!");
     return false;
   }
 
