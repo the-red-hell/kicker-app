@@ -2,6 +2,7 @@ extends layout
 
 block append css
     link(rel='stylesheet' type="text/css" href='/static/css/home.css')
+    link(rel='stylesheet' type="text/css" href='/static/css/statistics/leaderboard.css')
 
 block content
     div.container
@@ -23,3 +24,5 @@ block content
 
             div.callToActionButton
                 a(href='/auth/login') Besteige das Leaderboard
+                
+        include statistics/leaderboard.pug

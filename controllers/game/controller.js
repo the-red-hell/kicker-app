@@ -20,7 +20,7 @@ export const joinGame = async (req, res) => {
       !possiblePositions.includes(position) ||
       !possibleTeams.includes(team)
     ) {
-      return res.status(400).send("Invalid Link!"); // TODO
+      return res.status(404).send("Invalid Link!"); // TODO
     }
 
     const userInGame = await canUserJoin(
@@ -65,6 +65,7 @@ async function canUserJoin(tableId, userId, position, team) {
   const client = await pool.connect();
   try {
     const game = await retrieveCurrentGameByTableId(client, tableId);
+
     if (game) {
       const users = await retrieveUsersByGameId(client, game.id);
       const userInGame = users.find((user) => user.user_id === userId);

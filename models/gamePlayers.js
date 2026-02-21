@@ -62,6 +62,12 @@ export const removeUserFromGame = async (client, gameId, userId) => {
   );
 };
 
+/**
+ *
+ * @param {Client} client
+ * @param {number} num
+ * @returns {Promise<{username: string, imageUrl: string, totalGoals: number}[]>}
+ */
 export const retrieveNumTopPlayersByGoals = async (client, num) => {
   const res = await client.query(
     `SELECT u.username, u.image_url, SUM(gp.goals) AS total_goals
@@ -72,14 +78,18 @@ export const retrieveNumTopPlayersByGoals = async (client, num) => {
      LIMIT $1`,
     [num]
   );
-  return res.rows;
+  return res.rows.map((row) => ({
+    username: row.username,
+    imageUrl: row.image_url,
+    totalGoals: parseInt(row.total_goals, 10),
+  }));
 };
 
 /**
  *
  * @param {Client} client
  * @param {number} num
- * @returns {Promise<{username: string, image_url: string, victories: number}[]>}
+ * @returns {Promise<{username: string, imageUrl: string, victories: number}[]>}
  */
 // I have tried coming up with sth myself but no way
 export const retrieveNumTopPlayersByVictories = async (client, num) => {
@@ -111,7 +121,7 @@ export const retrieveNumTopPlayersByVictories = async (client, num) => {
     )
     SELECT
         u.username,
-        u.image_url,
+        u.image_url AS imageUrl,
         pv.victories
     FROM player_victories pv
     JOIN users u ON pv.user_id = u.id
@@ -119,5 +129,9 @@ export const retrieveNumTopPlayersByVictories = async (client, num) => {
     LIMIT $1`,
     [num]
   );
-  return res.rows;
+  return res.rows.map((row) => ({
+    username: row.username,
+    imageUrl: row.imageUrl,
+    victories: parseInt(row.victories, 10),
+  }));
 };
