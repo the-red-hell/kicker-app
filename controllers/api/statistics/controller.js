@@ -1,8 +1,8 @@
 import console from "console";
 import {
   retrieveNumTopPlayersByGoals,
-  retrieveNumTopPlayersByVictories,
-} from "../../../models/gamePlayers.js";
+  retrieveTopPlayersByVictories,
+} from "../../../models/statistics.js";
 import { pool } from "../../../models/index.js";
 
 export const topPlayersByGoals = async (req, res) => {
@@ -37,7 +37,7 @@ export const topPlayersByVictories = async (req, res) => {
       return res.status(400).json({ error: "Invalid parameter" });
     }
 
-    const topPlayers = await retrieveNumTopPlayersByVictories(client, numInt);
+    const topPlayers = await retrieveTopPlayersByVictories(client, numInt);
     res.json(topPlayers);
   } catch (error) {
     console.error("Error fetching top players by victories:", error);

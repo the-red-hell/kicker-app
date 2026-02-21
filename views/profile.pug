@@ -1,1 +1,9 @@
 extends layout
+
+block content
+  h1 Your Profile
+  p Welcome, #{user.username}!
+  p Your email: #{user.email}
+  p Account created on: #{new Date(user.createdAt).toLocaleDateString()}
+  br
+  p You have played #{stats.gamesCount} games, won #{stats.victoryCount} of them, and scored #{stats.goalCount} goals.
