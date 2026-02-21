@@ -1,9 +1,8 @@
 #pageContent {
-    background-image: url("/static/images/dashboard_background.png");
-    background-repeat: no-repeat; 
-    background-position: center; 
-    background-size: cover;
-    width: 100vw;
-    height: 78vh;
-    filter: contrast(70%);
+  background-image: url("/static/images/dashboard_background.png");
+  background-repeat: no-repeat;
+  background-position: center;
+  background-size: cover;
+  height: 78vh;
+  filter: contrast(70%);
 }
