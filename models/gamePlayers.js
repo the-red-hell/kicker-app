@@ -61,3 +61,16 @@ export const removeUserFromGame = async (client, gameId, userId) => {
     [gameId, userId]
   );
 };
+
+export const retrieveNumTopPlayersByGoals = async (client, num) => {
+  const res = await client.query(
+    `SELECT u.username, u.image_url, SUM(gp.goals) AS total_goals
+       FROM game_players gp
+       JOIN users u ON gp.user_id = u.id
+       GROUP BY gp.user_id, u.username, u.image_url
+       ORDER BY total_goals DESC
+     LIMIT $1`,
+    [num]
+  );
+  return res.rows;
+};

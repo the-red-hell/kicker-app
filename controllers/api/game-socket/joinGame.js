@@ -29,7 +29,6 @@ const joinGame = async (io, socket, tableId, position, team) => {
     await handleJoinGame(client, io, socket, tableId, position, team);
     await client.query("COMMIT");
   } catch (error) {
-    console.error("Error handling joinGame:", error);
     await client.query("ROLLBACK");
 
     // postgres unique_violation
@@ -41,7 +40,7 @@ const joinGame = async (io, socket, tableId, position, team) => {
     } else if (error.message === "GAME_ACTIVE") {
       socket.emit("error", "Game is already active!");
     } else {
-      console.error(error);
+      console.error("Error handling joinGame:", error);
       socket.emit("error", "Error joining the game!");
     }
 
