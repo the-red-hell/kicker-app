@@ -74,3 +74,50 @@ export const retrieveNumTopPlayersByGoals = async (client, num) => {
   );
   return res.rows;
 };
+
+/**
+ * I have tried coming up with sth myself but no way
+ *
+ * @param {Client} client
+ * @param {number} num
+ * @returns
+ */
+export const retrieveNumTopPlayersByVictories = async (client, num) => {
+  const res = await client.query(
+    `WITH game_scores AS (
+        SELECT
+            game_id,
+            team,
+            SUM(goals) as total_goals
+        FROM game_players
+        GROUP BY game_id, team
+    ),
+    winning_teams AS (
+        SELECT
+            gs1.game_id,
+            gs1.team as winning_team
+        FROM game_scores gs1
+        JOIN games g on gs1.game_id = g.id
+        LEFT JOIN game_scores gs2 ON gs1.game_id = gs2.game_id AND gs1.team != gs2.team
+        WHERE g.status = 'ended' AND (gs2.total_goals IS NULL OR gs1.total_goals > gs2.total_goals)
+    ),
+    player_victories AS (
+        SELECT
+            gp.user_id,
+            COUNT(wt.winning_team) as victories
+        FROM game_players gp
+        JOIN winning_teams wt ON gp.game_id = wt.game_id AND gp.team = wt.winning_team
+        GROUP BY gp.user_id
+    )
+    SELECT
+        u.username,
+        u.image_url,
+        pv.victories
+    FROM player_victories pv
+    JOIN users u ON pv.user_id = u.id
+    ORDER BY pv.victories DESC
+    LIMIT $1`,
+    [num]
+  );
+  return res.rows;
+};
