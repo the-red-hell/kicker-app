@@ -1,7 +1,6 @@
 import { retrieveUsersByGameId } from "../../models/gamePlayers.js";
 import { retrieveCurrentGameByTableId } from "../../models/games.js";
 import { pool } from "../../models/index.js";
-import { retrieveTableById } from "../../models/tables.js";
 import { possiblePositions, possibleTeams } from "../../models/types.js";
 
 /**
@@ -21,11 +20,7 @@ export const joinGame = async (req, res) => {
       !possiblePositions.includes(position) ||
       !possibleTeams.includes(team)
     ) {
-      return res.status(400).send("Ungültiger link!"); // TODO
-    }
-    // does the table exist
-    if (!tableId || !(await retrieveTableById(client, tableId))) {
-      return res.status(404).send("Tisch nicht gefunden!"); // TODO
+      return res.status(400).send("Invalid Link!"); // TODO
     }
 
     const userInGame = await canUserJoin(

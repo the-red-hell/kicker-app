@@ -18,6 +18,8 @@ import { getRoomName } from "./socket.js";
 import { retrieveStatusTablesByUserId } from "../../../models/tables.js";
 // eslint-disable-next-line no-unused-vars
 import { Client } from "pg";
+// eslint-disable-next-line no-unused-vars
+import { Socket } from "socket.io";
 
 const joinGame = async (io, socket, tableId, position, team) => {
   validateTeamAndPos(socket, team, position);
@@ -37,8 +39,6 @@ const joinGame = async (io, socket, tableId, position, team) => {
     } else if (error.message === "GAME_FULL") {
       // game is full
       socket.emit("error", "Table is already full!");
-    } else if (error.message === "GAME_ACTIVE") {
-      socket.emit("error", "Game is already active!");
     } else {
       console.error("Error handling joinGame:", error);
       socket.emit("error", "Error joining the game!");
@@ -65,16 +65,13 @@ async function handleJoinGame(client, io, socket, tableId, position, team) {
   const session = socket.request.session;
 
   // first, check whether the user is already on another table
-  if (await handleUserAlreadyPlaying(client, socket, tableId, session)) return;
+  if (
+    await handleUserAlreadyPlayingAnotherGame(client, socket, tableId, session)
+  )
+    return;
 
   const game = await createAndGetGameIfNotExists(client, tableId);
   const users = await retrieveUsersByGameId(client, game?.id);
-
-  // is game already active?
-  const isGameActive = game && game.status === "active";
-  if (isGameActive && !isUserInGame(users, session.userId)) {
-    throw new Error("GAME_ACTIVE");
-  }
 
   const roomName = getRoomName(tableId);
   socket.join(roomName);
@@ -83,7 +80,16 @@ async function handleJoinGame(client, io, socket, tableId, position, team) {
   // (if your position is taken, you gotta know whom to blame)
   socket.emit("currentPlayers", users);
 
-  await handleUserRefresh(client, socket, game);
+  const isCurrentUserInGame = isUserInGame(users, session.userId);
+  const isGameActive = game && game.status === "active";
+  await handleActiveGame(
+    client,
+    socket,
+    game,
+    isGameActive,
+    isCurrentUserInGame
+  );
+  if (isGameActive && !isCurrentUserInGame) return;
 
   await updateOrAddPlayer(client, game, session.userId, position, team);
   const updatedUsers = await emitUserUpdate(client, io, roomName, game.id);
@@ -95,7 +101,12 @@ async function handleJoinGame(client, io, socket, tableId, position, team) {
   }
 }
 
-async function handleUserAlreadyPlaying(client, socket, tableId, session) {
+async function handleUserAlreadyPlayingAnotherGame(
+  client,
+  socket,
+  tableId,
+  session
+) {
   const activeTable = (
     await retrieveStatusTablesByUserId(client, "active", session.userId)
   )[0];
@@ -133,25 +144,35 @@ async function createAndGetGameIfNotExists(client, tableId) {
 
 /**
  * game is active, user is rejoining after refresh, we just emit the current player list and game state to the user
+ * or someone else might join who just wants to spectate
+ *
+ * returns whether the
  */
-async function handleUserRefresh(client, socket, game) {
-  if (game.status === "active") {
-    socket.emit("gameStarted");
+async function handleActiveGame(
+  client,
+  socket,
+  game,
+  isGameActive,
+  isCurrentUserInGame
+) {
+  // is game already active?
+  if (isGameActive) {
     const goals = await retrieveGoalsPerTeamByGameId(client, game.id);
     socket.emit("goalUpdate", goals);
-    // if the game is active and any team has already 10 points, it means that it hasn't been confirmed yet
-    if (hasAnyTeamWon(goals)) socket.emit("waitingForConfirmation");
-    return;
+
+    if (!isCurrentUserInGame) {
+      // user can still join but no controls are given via `gameStarted` or `waitingForConfirmation`
+      socket.emit("error", "Game is already active, you are spectating.");
+    } else {
+      socket.emit("gameStarted");
+      // if the game is active and any team has already 10 points, it means that it hasn't been confirmed yet
+      if (hasAnyTeamWon(goals)) socket.emit("waitingForConfirmation");
+    }
   }
 }
 
 async function updateOrAddPlayer(client, game, userId, position, team) {
   const users = await retrieveUsersByGameId(client, game.id);
-
-  // if there are already 4 players, or if the position is already taken, we don't allow joining
-  if (users.length >= 4) {
-    throw new Error("GAME_FULL");
-  }
 
   // if the user is already in the game we allow updating their position/team
   // condition checking is done by postgres constraints

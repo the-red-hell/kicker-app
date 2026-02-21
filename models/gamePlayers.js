@@ -76,12 +76,12 @@ export const retrieveNumTopPlayersByGoals = async (client, num) => {
 };
 
 /**
- * I have tried coming up with sth myself but no way
  *
  * @param {Client} client
  * @param {number} num
- * @returns
+ * @returns {Promise<{username: string, image_url: string, victories: number}[]>}
  */
+// I have tried coming up with sth myself but no way
 export const retrieveNumTopPlayersByVictories = async (client, num) => {
   const res = await client.query(
     `WITH game_scores AS (
