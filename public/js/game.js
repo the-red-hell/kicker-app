@@ -20,6 +20,7 @@ socket.on("connect", () => {
     .catch((error) => {
       console.error("Error fetching table info:", error);
       document.getElementById("tableName").textContent = "Unknown Table";
+      showErrorMessage("Table not found");
     });
 
   socket.emit("joinGame", {

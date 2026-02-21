@@ -1,0 +1,15 @@
+meta {
+  name: top-goals
+  type: http
+  seq: 1
+}
+
+get {
+  url: http://localhost:8080/api/statistics/top-goals/12
+  body: none
+  auth: inherit
+}
+
+settings {
+  encodeUrl: true
+}
