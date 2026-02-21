@@ -134,6 +134,7 @@ button {
 
 .popup {
   visibility: hidden;
+  pointer-events: none;
 
   display: flex;
   position: fixed;

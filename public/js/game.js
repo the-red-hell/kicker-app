@@ -99,7 +99,10 @@ socket.on("undoGoal", () => {
   document.getElementById("scoreGoal").textContent = "Score Goal";
 });
 
-document.getElementById("scoreGoal").addEventListener("click", () => {
+const scoreGoalButton = document.getElementById("scoreGoal");
+scoreGoalButton.addEventListener("click", () => {
+  scoreGoalButton.disabled = true;
+  setTimeout(() => (scoreGoalButton.disabled = false), 1000);
   socket.emit("goalScored", { tableId: TABLE_ID });
 });
 
