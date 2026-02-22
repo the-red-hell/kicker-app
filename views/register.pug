@@ -1,43 +1,48 @@
-extends layout 
+extends layout
+
+block append css
+    link(rel='stylesheet' type="text/css" href='/static/css/login.css')
 
 block content
-    h1 Register
+    div.container
+        h1 Register
 
-    form(action="/api/auth/register" method="POST")#register-form
+        form(action="/api/auth/register" method="POST")#register-form
 
-        div
-            label(for="email") Email:
+            div
+                label(for="email") Email:
+                br
+                input(type="email" name="email" required)#email
             br
-            input(type="email" name="email" required)#email
-        br
 
-        div
-            label(for="username") Username:
+            div
+                label(for="username") Username:
+                br
+                input(type="text" name="username" required)#username
             br
-            input(type="text" name="username" required)#username
-        br
 
-        div
-            label(for="password") Password:
+            div
+                label(for="password") Password:
+                br
+                input(type="password" name="password" required)#password
             br
-            input(type="password" name="password" required)#password
-        br
 
-        div
-            label(for="confirmPassword") Confirm Password:
+            div
+                label(for="confirmPassword") Confirm Password:
+                br
+                input(type="password" name="confirmPassword" required)#confirmPassword
             br
-            input(type="password" name="confirmPassword" required)#confirmPassword
-        br
 
-        div
-            input(type="checkbox" name="terms" required)#terms
-            label(for="terms") I agree to the 
-            a(href="/terms") Terms and Conditions
-        br
+            div
+                input(type="checkbox" name="terms" required)#terms
+                label(for="terms") I agree to the 
+                a(href="/terms") Terms and Conditions
+            br
 
-        button(type="submit") Register
-        br
+            button(type="submit") Register
+            br
 
-        p Already have an account? 
-            a(href="/auth/login") Login here
-        br
+            div
+                p Already have an account? 
+                    a(href="/auth/login") Login here
+            br

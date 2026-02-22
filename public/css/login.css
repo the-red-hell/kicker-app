@@ -1,0 +1,9 @@
+.container {
+  padding: 2vh;
+  gap: 3vh;
+
+  display: flex;
+  flex-direction: column;
+  align-items: left;
+
+}
