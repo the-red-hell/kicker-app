@@ -9,7 +9,3 @@ export const pool = new Pool({
   port: 5432,
   max: 20,
 });
-
-export const query = (text, params) => {
-  return pool.query(text, params);
-};

@@ -10,45 +10,47 @@ import { createServer as createHttpServer } from "node:http";
 import { Server as SocketIOServer } from "socket.io";
 import gameSocket from "./controllers/api/game-socket/socket.js";
 
+const LOGOUT_TIME = 30 * 24 * 60 * 60 * 1000; // 30 days in milliseconds
+const PORT = process.env.PORT || 3000;
+
 const PG_SESSION = connectPgSimple(expressSession);
 
-const APP = express();
-const PORT = process.env.PORT || 3000;
+const app = express();
 // we need socket.io for websockets
-const SERVER = createHttpServer(APP);
-const SOCKET_IO = new SocketIOServer(SERVER, { path: "/api/game-socket" });
+const server = createHttpServer(app);
+const socketIo = new SocketIOServer(server, { path: "/api/game-socket" });
 
 // Middleware setup for json and urlencoded form data
-APP.use(express.json());
-APP.use(express.urlencoded({ extended: true }));
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
 
-APP.set("view engine", "pug");
+app.set("view engine", "pug");
 
 // session management
 const sessionMiddleware = expressSession({
   secret: process.env.SESSION_COOKIE_SECRET,
   resave: false,
   saveUninitialized: false,
-  cookie: { maxAge: 30 * 24 * 60 * 60 * 1000 }, // 30 days
+  cookie: { maxAge: LOGOUT_TIME },
   store: new PG_SESSION({
     pool: pgPool,
     createTableIfMissing: true,
     tableName: "user_session",
-    ttl: 30 * 24 * 60 * 60 * 1000, // 30 days
+    ttl: LOGOUT_TIME,
     autoRemoveInterval: 60 * 60 * 1000, // Check for expired sessions every hour
   }),
 });
 
-APP.use(sessionMiddleware);
-SOCKET_IO.use((socket, next) => {
+app.use(sessionMiddleware);
+socketIo.use((socket, next) => {
   sessionMiddleware(socket.request, {}, next);
 });
 
-APP.use("/", mainRouter);
-SOCKET_IO.on("connection", (socket) => gameSocket(SOCKET_IO, socket));
+app.use("/", mainRouter);
+socketIo.on("connection", (socket) => gameSocket(socketIo, socket));
 
-SERVER.listen(PORT, () => {
+server.listen(PORT, () => {
   console.log(
-    `Server started on: ${SERVER.address().address}, port: ${SERVER.address().port}`
+    `Server started on: ${server.address().address}, port: ${server.address().port}`
   );
 });
