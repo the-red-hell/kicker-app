@@ -1,19 +1,24 @@
-extends layout 
+extends layout
+
+block append css
+    link(rel='stylesheet' type="text/css" href='/static/css/login.css')
+
 
 block content
-    h1 Login
-    form(action="/api/auth/login" method="POST")#login-form
-        div
-            label(for="username") Username:
+    div.container
+        h1 Login
+        form(action="/api/auth/login" method="POST")#login-form
+            div
+                label(for="username") Username:
+                br
+                input(type="text" name="username" required)#username
             br
-            input(type="text" name="username" required)#username
-        br
-        div
-            label(for="password") Password:
+            div
+                label(for="password") Password:
+                br
+                input(type="password" name="password" required)#password
+            button(type="submit") Login
             br
-            input(type="password" name="password" required)#password
-        button(type="submit") Login
-        br
-        p Don't have an account? 
-            a(href="/auth/register") Register here
-        br
+            p Don't have an account? 
+                a(href="/auth/register") Register here
+            br
