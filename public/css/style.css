@@ -1,8 +1,15 @@
+html {
+  height: 100%;
+}
+
 body {
   font-family: Arial, sans-serif;
   margin: 0;
   padding: 0;
   background-color: #ffffff;
+  display: flex;
+  flex-direction: column;
+  min-height: 100%;
 }
 
 header {
@@ -53,12 +60,16 @@ header {
   height: 7vh;
 }
 
+main#pageContent {
+  flex: 1;
+}
+
 footer {
   padding-left: 3vw;
   padding-bottom: 2vh;
   padding-top: 1vh;
   background-color: #adadad;
-  bottom: 0;
+  margin-top: auto;
 }
 
 @media screen and (max-width: 450px) {
