@@ -91,12 +91,11 @@ async function handleJoinGame(client, io, socket, tableId, position, team) {
   );
   if (isGameActive && !isCurrentUserInGame) return;
 
-  await updateOrAddPlayer(client, game, session.userId, position, team);
+  await updateOrAddPlayer(io, client, game, session.userId, position, team);
   const updatedUsers = await emitUserUpdate(client, io, roomName, game.id);
 
   // start game if there are 4 players
-  if (updatedUsers.length === 2) {
-    // TODO: set to 4
+  if (updatedUsers.length === 4 && !isGameActive) {
     await startGame(client, io, game.id, roomName);
   }
 }
@@ -171,19 +170,26 @@ async function handleActiveGame(
   }
 }
 
-async function updateOrAddPlayer(client, game, userId, position, team) {
+async function updateOrAddPlayer(io, client, game, userId, position, team) {
   const users = await retrieveUsersByGameId(client, game.id);
+  const user = getUserFromGame(users, userId);
 
   // if the user is already in the game we allow updating their position/team
   // condition checking is done by postgres constraints
-  if (isUserInGame(users, userId)) {
+  if (user !== undefined && user.game_id == game.id) {
     return await updateUserFromGame(client, game.id, userId, position, team);
   } else {
     const waitingTable = (
       await retrieveStatusTablesByUserId(client, "waiting", userId)
     )[0];
     if (waitingTable && waitingTable.id !== game.table_id) {
-      await removeUserFromGame(client, waitingTable.id, userId);
+      await removeUserFromGame(client, waitingTable.game_id, userId);
+      await emitUserUpdate(
+        client,
+        io,
+        getRoomName(waitingTable.id),
+        waitingTable.game_id
+      );
     }
     return await addUserToGame(client, game.id, userId, position, team);
   }
@@ -191,6 +197,10 @@ async function updateOrAddPlayer(client, game, userId, position, team) {
 
 function isUserInGame(users, userId) {
   return users.some((p) => p.user_id === userId);
+}
+
+function getUserFromGame(users, userId) {
+  return users.find((p) => p.user_id === userId);
 }
 
 async function emitUserUpdate(client, io, roomName, gameId) {
