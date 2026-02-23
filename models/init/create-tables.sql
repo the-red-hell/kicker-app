@@ -18,10 +18,11 @@ CREATE TABLE IF NOT EXISTS tables (
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
-
 CREATE TABLE IF NOT EXISTS games (
     id SERIAL PRIMARY KEY,
-    table_id INTEGER NOT NULL REFERENCES tables(id),
+
+    -- on delete happens if timeout is exceeded and when the game hasn't started
+    table_id INTEGER NOT NULL REFERENCES tables(id) ON DELETE CASCADE,
 
     started_at TIMESTAMP,
     ended_at TIMESTAMP,
