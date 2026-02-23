@@ -1,8 +1,24 @@
 #pageContent {
-  background-image: url("/static/images/dashboard_background.png");
-  background-repeat: no-repeat;
-  background-position: center;
-  background-size: cover;
-  height: 78vh;
-  filter: contrast(70%);
+    position: relative;
+    overflow: hidden;
+    background-repeat: no-repeat; 
+    background-position: center; 
+    background-size: cover;
+    width: 100vw;
+    height: 80vh;
+    z-index: -1;
+    filter: contrast(70%);
+    background-attachment: fixed;
+}
+
+@media screen and (max-width: 900px) {
+    #pageContent {
+        background-image: url("/static/images/background_vertical.png");
+    }
+}
+
+@media screen and (min-width: 901px) {
+    #pageContent {
+        background-image: url("/static/images/background_horizontal.png");
+    }
 }
