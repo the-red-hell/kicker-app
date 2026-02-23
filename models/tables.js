@@ -18,7 +18,7 @@ export const retrieveStatusTablesByUserId = async (client, status, userId) => {
 
   const res = await client.query(
     `
-    SELECT t.*
+    SELECT t.*, g.id AS game_id
     FROM tables t
     JOIN games g ON g.table_id = t.id
     JOIN game_players gp ON gp.game_id = g.id
