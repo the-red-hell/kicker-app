@@ -1,9 +1,14 @@
 import { Router } from "express";
-import { topPlayersByGoals, topPlayersByVictories } from "./controller.js";
+import {
+  topPlayersByAvgGoals,
+  topPlayersByVictories,
+  topPlayersByAbsolutes,
+} from "./controller.js";
 
 const statisticsRouter = new Router();
 
-statisticsRouter.get("/top-goals/:num", topPlayersByGoals);
-statisticsRouter.get("/top-victories/:num", topPlayersByVictories);
+statisticsRouter.get("/top-victories", topPlayersByVictories);
+statisticsRouter.get("/top-avg-goals", topPlayersByAvgGoals);
+statisticsRouter.get("/top-absolutes", topPlayersByAbsolutes);
 
 export default statisticsRouter;
