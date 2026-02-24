@@ -1,6 +1,6 @@
 .container {
   padding: 2vh;
-  gap: 3vh;
+  gap: 10vh;
 
   display: flex;
   flex-direction: column;
@@ -73,9 +73,16 @@
   flex-direction: column;
 }
 
+.what-others-say h1 {
+  text-align: center;
+}
+
 .testimonials {
   overflow: hidden;
   display: flex;
+  box-shadow:
+    -20px 0 20px 3px white inset,
+    20px 0 20px 4px white inset;
 }
 
 .testimonial-group {
@@ -87,7 +94,8 @@
   padding-right: 20px;
 
   will-change: transform;
-  animation: scrolling 20s linear infinite;
+  animation: scrolling 30s linear infinite;
+  z-index: -1;
 }
 
 .testimonials:hover .testimonial-group {

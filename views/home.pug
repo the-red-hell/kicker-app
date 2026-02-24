@@ -5,8 +5,8 @@ block append css
     link(rel='stylesheet' type="text/css" href='/static/css/statistics/leaderboard.css')
 
 block content
-    div.container
-        div.hero-shot
+    .container
+        .hero-shot
             img(src='/static/images/hero_shot.png' alt='Hero Shot')
 
         .register
@@ -14,9 +14,6 @@ block content
                 
         include statistics/leaderboard.pug
         
-        .leaderboard
-            a(href='/auth/register') Join the Leaderboard now and compete with your friends!
-
         .what-we-can-container
             .what-we-can
                 h2 Analyze your performance
@@ -31,35 +28,27 @@ block content
                 h2 Track your progress and see how you improve over time
                 
         .what-others-say 
-            h2 what others say about us
+            h1 What others say about us:
             .testimonials
-                .testimonial-group
-                    .testimonial
-                        p.quote "this app has transformed the way i play foosball. the real-time stats and performance analysis have helped me improve my game significantly. highly recommended!"
-                        span - alex m.
-                    .testimonial
-                        p.quote "i love how easy it is to track my progress and compete with friends. the leaderboard adds a fun competitive element that keeps me motivated to play more!"
-                        span - jamie l.
-                    .testimonial
-                        p.quote "the user-friendly interface and insightful analytics make this app a must-have for any foosball enthusiast. it's like having a personal coach in your pocket!"
-                        span - taylor s.
-                .testimonial-group
-                    .testimonial
-                        p.quote "this app has transformed the way i play foosball. the real-time stats and performance analysis have helped me improve my game significantly. highly recommended!"
-                        span - alex m.
-                    .testimonial
-                        p.quote "i love how easy it is to track my progress and compete with friends. the leaderboard adds a fun competitive element that keeps me motivated to play more!"
-                        span - jamie l.
-                    .testimonial
-                        p.quote "the user-friendly interface and insightful analytics make this app a must-have for any foosball enthusiast. it's like having a personal coach in your pocket!"
-                        span - taylor s.
-                .testimonial-group
-                    .testimonial
-                        p.quote "this app has transformed the way i play foosball. the real-time stats and performance analysis have helped me improve my game significantly. highly recommended!"
-                        span - alex m.
-                    .testimonial
-                        p.quote "i love how easy it is to track my progress and compete with friends. the leaderboard adds a fun competitive element that keeps me motivated to play more!"
-                        span - jamie l.
-                    .testimonial
-                        p.quote "the user-friendly interface and insightful analytics make this app a must-have for any foosball enthusiast. it's like having a personal coach in your pocket!"
-                        span - taylor s.
+                +testimonials
+                +testimonials
+                +testimonials
+                        
+
+mixin testimonials 
+    .testimonial-group
+        .testimonial
+            p.quote "This app has transformed the way I play foosball. The real-time stats and performance analysis have helped me improve my game significantly. Highly recommended!"
+            span - Alex M.
+        .testimonial
+            p.quote "I love how easy it is to track my progress and compete with friends. The leaderboard adds a fun competitive element that keeps me motivated to play more!"
+            span - Jamie L.
+        .testimonial
+            p.quote "The user-friendly interface and insightful analytics make this app a must-have for any foosball enthusiast. It's like having a personal coach in your pocket!"
+            span - Taylor S.
+        .testimonial 
+            p.quote "I was skeptical at first, but this app has exceeded my expectations. The QR-code scanning feature is a game-changer, making it so easy to get started and track my performance."
+            span - Jordan R.
+        .testimonial 
+            p.quote "The community aspect of this app is fantastic. Competing with friends and seeing my progress over time has made playing foosball even more enjoyable!"
+            span - Casey D.
