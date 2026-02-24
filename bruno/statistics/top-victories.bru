@@ -5,9 +5,14 @@ meta {
 }
 
 get {
-  url: http://localhost:8080/api/statistics/top-victories/12
+  url: http://localhost:8080/api/statistics/top-victories?amount=10&duration=1m
   body: none
   auth: inherit
+}
+
+params:query {
+  amount: 10
+  duration: 1m
 }
 
 settings {

@@ -1,0 +1,19 @@
+meta {
+  name: top-absolutes
+  type: http
+  seq: 3
+}
+
+get {
+  url: http://localhost:8080/api/statistics/top-absolutes?duration=1y
+  body: none
+  auth: inherit
+}
+
+params:query {
+  duration: 1y
+}
+
+settings {
+  encodeUrl: true
+}
