@@ -10,8 +10,6 @@ const socket = io({ path: "/api/game-socket" });
 document.getElementById("scoreGoal").classList.add(TEAM);
 
 socket.on("connect", () => {
-  console.log("Connected to game socket server");
-
   fetch(`/api/tables/${TABLE_ID}`)
     .then((res) => res.json())
     .then((table) => {
@@ -31,7 +29,6 @@ socket.on("connect", () => {
 });
 
 socket.on("currentPlayers", (players) => {
-  console.log("Current players in the game:", players);
   const playerDisplays = {
     black: {
       offense: document.querySelector("#players-black .offense"),
@@ -44,6 +41,13 @@ socket.on("currentPlayers", (players) => {
   };
 
   // Reset player display
+  Object.values(playerDisplays).forEach((team) => {
+    Object.values(team).forEach((pos) => {
+      pos.textContent = "——";
+    });
+  });
+
+  // Update player display with current players
   players.forEach((player) => {
     if (player.team && player.position && player.username) {
       const team = player.team;
