@@ -1,0 +1,12 @@
+extends layout
+
+block append css
+    link(rel="stylesheet", href="/static/css/404.css")
+
+block content
+    div.container
+        h1 404 - Page not found
+        p The page 
+            b #{originalUrl}
+            |  does not exist. Please check the URL or return to the homepage.
+        a(href='/') Back to Homepage
