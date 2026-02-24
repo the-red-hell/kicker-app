@@ -1,5 +1,11 @@
-const dashboard = (req, res) => {
-    res.render("dashboard", { title: "dashboard" });
-  };
+import { Router } from "express";
+import { checkAuthenticationMiddleware } from "./common.js";
 
-  export default dashboard;
+const dashboardRouter = new Router();
+dashboardRouter.use(checkAuthenticationMiddleware);
+
+dashboardRouter.get("/", (req, res) => {
+  res.render("dashboard", { title: "dashboard" });
+});
+
+export default dashboardRouter;
