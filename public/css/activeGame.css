@@ -93,35 +93,35 @@ button {
   cursor: pointer;
 }
 
-#scoreGoal {
+#score-goal {
   color: var(--light-text);
   min-height: 100px;
 }
 
-#scoreGoal.black {
+#score-goal.black {
   background-color: var(--black-team-color);
   color: var(--light-text);
 }
 
-#scoreGoal.white {
+#score-goal.white {
   background-color: var(--white-team-color);
   color: var(--dark-text);
 }
 
-#undoGoal {
+#undo-goal {
   background-color: #6c757d;
   color: var(--light-text);
   font-size: 1rem;
   padding: 0.75rem;
 }
 
-.controlButtons {
+.control-buttons {
   visibility: hidden;
   opacity: 0;
   transition: opacity 1s ease;
 }
 
-.errorMsg {
+.error-msg {
   padding: 0.75rem;
   border-radius: 4px;
   margin-top: 0.5rem;

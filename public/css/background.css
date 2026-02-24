@@ -1,4 +1,4 @@
-#pageContent {
+#page-content {
   position: relative;
   overflow: hidden;
   background-repeat: no-repeat;
@@ -12,13 +12,13 @@
 }
 
 @media screen and (max-width: 900px) {
-  #pageContent {
+  #page-content {
     background-image: url("/static/images/background_vertical.png");
   }
 }
 
 @media screen and (min-width: 901px) {
-  #pageContent {
+  #page-content {
     background-image: url("/static/images/background_horizontal.png");
   }
 }

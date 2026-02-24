@@ -13,12 +13,12 @@ html
       block header
         header
           nav
-            ul#iconList
+            ul#icon-list
               li
                 a(href=loggedIn ? "/dashboard" : "/")
                   img(src='/static/images/KickerAPP_Logo_tbbg.svg' alt='Home')#logo
               li#spacer
-              li.logInOut
+              li.log-in-out
                 if !loggedIn
                   button(onclick="window.location.href='/auth/login';") Login
                 else
@@ -27,7 +27,7 @@ html
                 a(href='/profile')
                   img(src='/static/images/Profile_Icon.png' alt='User')#profile
 
-      main#pageContent
+      main#page-content
         block content
 
       block footer

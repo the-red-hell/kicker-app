@@ -14,9 +14,9 @@ document.addEventListener("DOMContentLoaded", async () => {
 });
 
 function getPlaceElements() {
-  const firstPlaceContainer = document.getElementById("firstPlace");
-  const secondPlaceContainer = document.getElementById("secondPlace");
-  const thirdPlaceContainer = document.getElementById("thirdPlace");
+  const firstPlaceContainer = document.getElementById("first-place");
+  const secondPlaceContainer = document.getElementById("second-place");
+  const thirdPlaceContainer = document.getElementById("third-place");
 
   return [
     {

@@ -5,16 +5,15 @@
   display: flex;
   flex-direction: column;
   align-items: center;
-
 }
 
-.heroShot {
+.hero-shot {
   width: 100%;
 
   display: block;
 }
 
-.logIn {
+.log-in {
   width: 80%;
   padding: 14px 16px;
 
@@ -22,30 +21,30 @@
   text-align: center;
   justify-content: center;
 
-  background-color: #00BF63;
+  background-color: #00bf63;
 }
 
 .leaderboard {
-    width: 80%;
+  width: 80%;
 
-    display: flex;
-    justify-content: center;
+  display: flex;
+  justify-content: center;
 }
 
-.callToAction {
-    width: 80%;
-    gap: 3vh;
+.call-to-action {
+  width: 80%;
+  gap: 3vh;
 
-    display: flex;
-    justify-content: center;
-    flex-direction: column;
+  display: flex;
+  justify-content: center;
+  flex-direction: column;
 }
 
-.callToActionButton {
-    padding: 14px 16px;
+.call-to-action-button {
+  padding: 14px 16px;
 
-    text-align: center;
-    text-size-adjust: 150%;
+  text-align: center;
+  text-size-adjust: 150%;
 
-    background-color: #00BF63;
+  background-color: #00bf63;
 }

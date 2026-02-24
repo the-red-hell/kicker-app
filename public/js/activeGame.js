@@ -7,7 +7,7 @@ const POSITION = window.POSITION;
 
 const socket = io({ path: "/api/game-socket" });
 
-document.getElementById("scoreGoal").classList.add(TEAM);
+document.getElementById("score-goal").classList.add(TEAM);
 
 socket.on("connect", () => {
   fetch(`/api/tables/${TABLE_ID}`)
@@ -95,22 +95,22 @@ socket.on("gameOver", (data) => {
 });
 
 socket.on("waitingForConfirmation", () => {
-  document.getElementById("scoreGoal").textContent = "Confirm Score";
+  document.getElementById("score-goal").textContent = "Confirm Score";
 });
 
 socket.on("undoGoal", () => {
   // we set it back to "Score Goal" because if it was the last goal, the UI would still say "Confirm Score"
-  document.getElementById("scoreGoal").textContent = "Score Goal";
+  document.getElementById("score-goal").textContent = "Score Goal";
 });
 
-const scoreGoalButton = document.getElementById("scoreGoal");
+const scoreGoalButton = document.getElementById("score-goal");
 scoreGoalButton.addEventListener("click", () => {
   scoreGoalButton.disabled = true;
   setTimeout(() => (scoreGoalButton.disabled = false), 1000);
   socket.emit("goalScored", { tableId: TABLE_ID });
 });
 
-document.getElementById("undoGoal").addEventListener("click", () => {
+document.getElementById("undo-goal").addEventListener("click", () => {
   socket.emit("undoGoal", { tableId: TABLE_ID });
 });
 
@@ -118,7 +118,7 @@ function showErrorMessage(message) {
   const errorBox = document.getElementById("errorBox");
 
   const child = errorBox.appendChild(document.createElement("p"));
-  child.classList.add("errorMsg");
+  child.classList.add("error-msg");
   child.textContent = message;
 
   setTimeout(() => {
@@ -138,7 +138,7 @@ function showPopupMessage(message, time = 2000) {
 }
 
 function toggleControlButtons(show) {
-  const buttons = document.querySelectorAll(".controlButtons");
+  const buttons = document.querySelectorAll(".control-buttons");
   buttons.forEach((button) => {
     if (show) {
       button.style.visibility = "visible";

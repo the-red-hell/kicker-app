@@ -7,22 +7,22 @@ block append css
 block content
     div.container
         div
-            img(src='/static/images/hero_shot.png' alt='Hero Shot').heroShot
+            img(src='/static/images/hero_shot.png' alt='Hero Shot').hero-shot
 
-        div.logIn
+        div.log-in
             a(href='/auth/login') Jetzt Anmelden
         
         div.leaderboard
             a(href='/auth/login') Join the Leaderboard now and compete with your friends!
 
-        div.callToAction
-            div.callToActionButton
+        div.call-to-action
+            div.call-to-action-button
                 a(href='/auth/login') Analysiere deine Spiele
 
-            div.callToActionButton
+            div.call-to-action-button
                 a(href='/auth/login') Vergleiche dich mit Freunden
 
-            div.callToActionButton
+            div.call-to-action-button
                 a(href='/auth/login') Besteige das Leaderboard
                 
         include statistics/leaderboard.pug
