@@ -8,12 +8,15 @@
 }
 
 .hero-shot {
-  width: 100%;
-
-  display: block;
+  width: 90%;
 }
 
-.log-in {
+.hero-shot img {
+  width: 100%;
+  height: auto;
+}
+
+.register {
   width: 80%;
   padding: 14px 16px;
 
@@ -31,7 +34,33 @@
   justify-content: center;
 }
 
-.call-to-action {
+.what-we-can-container {
+  width: 80%;
+  gap: 3vh;
+
+  display: flex;
+  justify-content: center;
+  flex-direction: row;
+  flex-wrap: wrap;
+}
+
+.what-we-can {
+  padding: 14px 16px;
+
+  width: 45%;
+  height: 10vh;
+
+  text-align: center;
+  text-size-adjust: 150%;
+
+  background-color: #00bf63;
+}
+
+.what-we-can:hover {
+  background-color: #208051;
+}
+
+.what-others-say {
   width: 80%;
   gap: 3vh;
 
@@ -40,11 +69,22 @@
   flex-direction: column;
 }
 
-.call-to-action-button {
+.testimonials {
+  display: flex;
+  gap: 3vh;
+  justify-content: center;
+}
+
+.testimonial {
   padding: 14px 16px;
 
-  text-align: center;
-  text-size-adjust: 150%;
+  display: flex;
+  flex-direction: column;
+  gap: 1vh;
 
-  background-color: #00bf63;
+  background-color: #f8f9fa;
+}
+
+.testimonial .quote {
+  font-style: italic;
 }
