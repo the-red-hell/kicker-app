@@ -134,3 +134,7 @@ export const undoGoalInGame = async (client, gameId) => {
   );
   return updateGames.rows[0];
 };
+
+export const deleteGameById = async (client, gameId) => {
+  await client.query("DELETE FROM games WHERE id = $1", [gameId]);
+};
