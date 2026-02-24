@@ -2,7 +2,7 @@
   --first-place-size: 200px;
 }
 
-.leaderBoardContainer {
+.leader-board-container {
   display: flex;
   flex-direction: row;
   align-items: flex-end;
@@ -13,7 +13,7 @@
   max-width: 90vw;
 }
 
-.placeContainer {
+.place-container {
   border-radius: 10px;
   padding: 10px;
   height: calc(3rem + 1.5rem + 20px);
@@ -24,26 +24,26 @@
   align-items: center;
 }
 
-.placeContainer#firstPlace {
+.place-container#first-place {
   background-color: gold;
   height: var(--first-place-size);
 }
 
-.placeContainer#secondPlace {
+.place-container#second-place {
   background-color: silver;
 }
 
-.placeContainer#thirdPlace {
+.place-container#third-place {
   background-color: #cd7f32; /* bronze */
 }
 
-.placeScore {
+.place-score {
   font-size: 3rem;
   font-weight: bold;
   word-wrap: break-word;
 }
 
-.placeName {
+.place-name {
   font-size: medium;
   margin-top: 10px;
 }

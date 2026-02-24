@@ -1,7 +1,7 @@
-#Box {
-    padding: 2vh;
-    border-radius: 1vh;
-    border: 0.2vh;
-    border-style: solid;
-    border-color: black;
+#box {
+  padding: 2vh;
+  border-radius: 1vh;
+  border: 0.2vh;
+  border-style: solid;
+  border-color: black;
 }
