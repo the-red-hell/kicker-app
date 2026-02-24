@@ -13,6 +13,7 @@ body {
 }
 
 header {
+  z-index: 1;
   background-color: #303030;
   padding: 2vh;
   position: sticky;
