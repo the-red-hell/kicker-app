@@ -107,7 +107,6 @@ const scoreGoalButtons = [
   document.getElementById("score-goal"),
   document.getElementById("score-" + TEAM),
 ];
-console.log(scoreGoalButtons);
 scoreGoalButtons.forEach((scoreGoalButton) => {
   scoreGoalButton.addEventListener("click", () => {
     scoreGoalButtons.forEach((btn) => (btn.disabled = true));

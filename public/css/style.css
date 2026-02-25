@@ -26,7 +26,7 @@
 
   /* UI Colors */
   --color-header: #2d4a3e;
-  --color-footer: #dee2e6;
+  --color-footer: #2d4a3e;
   --color-border: #ced4da;
 
   /* Shadows */
@@ -118,7 +118,16 @@ footer {
   padding-bottom: 2vh;
   padding-top: 1vh;
   background-color: var(--color-footer);
+  color: var(--color-text-light);
   margin-top: auto;
+}
+
+footer a {
+  color: var(--color-primary-light);
+}
+
+footer a:hover {
+  color: var(--color-accent);
 }
 
 @media screen and (max-width: 450px) {
