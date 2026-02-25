@@ -1,14 +1,45 @@
 .container {
-  padding: 2vh;
-  gap: 10vh;
+  /* padding: 2vh; */
+  gap: 10vw;
 
   display: flex;
   flex-direction: column;
   align-items: center;
 }
 
+.hero-container {
+  width: 100%;
+  display: grid;
+}
+
+.hero-text {
+  grid-column: 1;
+  grid-row: 1;
+
+  display: flex;
+  align-items: center;
+
+  -webkit-text-fill-color: transparent;
+  -webkit-background-clip: text;
+  background-clip: text;
+
+  background-image: url("/static/images/hero_shot_bg_clip.png");
+  background-size: 100% auto;
+
+  color: black;
+}
+
+.hero-text .text {
+  font-weight: bolder;
+  font-size: 10vmin;
+  text-align: left;
+  padding-left: 5vw;
+}
+
 .hero-shot {
-  width: 90%;
+  grid-column: 1;
+  grid-row: 1;
+  z-index: -1;
 }
 
 .hero-shot img {
@@ -16,15 +47,15 @@
   height: auto;
 }
 
-.register {
-  width: 80%;
-  padding: 14px 16px;
+.register button {
+  width: 80vw;
+
+  font-size: xx-large;
+  font-weight: 900;
 
   display: flex;
   text-align: center;
   justify-content: center;
-
-  background-color: #00bf63;
 }
 
 .leaderboard {
