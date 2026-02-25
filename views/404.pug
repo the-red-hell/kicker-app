@@ -9,4 +9,13 @@ block content
         p The page 
             b #{originalUrl}
             |  does not exist. Please check the URL or return to the homepage.
-        a(href='/') Back to Homepage
+
+        if message
+            .reason
+                h2 Reason:
+                p #{message}
+        
+        if loggedIn
+            a(href='/dashboard') Back to Dashboard
+        else 
+            a(href='/') Back to Homepage
