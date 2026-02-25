@@ -103,11 +103,20 @@ socket.on("undoGoal", () => {
   document.getElementById("score-goal").textContent = "Score Goal";
 });
 
-const scoreGoalButton = document.getElementById("score-goal");
-scoreGoalButton.addEventListener("click", () => {
-  scoreGoalButton.disabled = true;
-  setTimeout(() => (scoreGoalButton.disabled = false), 1000);
-  socket.emit("goalScored", { tableId: TABLE_ID });
+const scoreGoalButtons = [
+  document.getElementById("score-goal"),
+  document.getElementById("score-" + TEAM),
+];
+console.log(scoreGoalButtons);
+scoreGoalButtons.forEach((scoreGoalButton) => {
+  scoreGoalButton.addEventListener("click", () => {
+    scoreGoalButtons.forEach((btn) => (btn.disabled = true));
+    setTimeout(
+      () => scoreGoalButtons.forEach((btn) => (btn.disabled = false)),
+      1000
+    );
+    socket.emit("goalScored", { tableId: TABLE_ID });
+  });
 });
 
 document.getElementById("undo-goal").addEventListener("click", () => {
