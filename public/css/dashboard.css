@@ -1,0 +1,31 @@
+#flex-box{
+    margin: 3%;
+    display:flex;
+    flex-wrap: wrap;
+    flex-direction: row;
+    justify-content: space-evenly;
+    gap: 30px;
+}
+
+#statistic1,#statistic2,#statistic3{
+    min-width: 300px;
+    flex: 1;
+    filter: contrast(142.857%);
+    border-radius: var(--radius-lg);
+    padding: 1vw;
+    box-shadow: var(--shadow-md);
+}
+
+#statistic1{
+    background-color: var(--color-primary);
+    color: var(--color-text-primary);
+}
+#statistic2{
+    background-color: var(--color-surface);
+    color: var(--color-text-primary);
+}
+#statistic3{
+    background-color: var(--color-secondary);
+    color: var(--color-text-light);
+}
+
