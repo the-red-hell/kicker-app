@@ -15,10 +15,8 @@ socket.on("connect", () => {
     .then((table) => {
       document.getElementById("tableName").textContent = table.name;
     })
-    .catch((error) => {
-      console.error("Error fetching table info:", error);
+    .catch(() => {
       document.getElementById("tableName").textContent = "Unknown Table";
-      showErrorMessage("Table not found");
     });
 
   socket.emit("joinGame", {
@@ -61,7 +59,6 @@ socket.on("currentPlayers", (players) => {
 });
 
 socket.on("error", (message) => {
-  console.error("Error from server:", message);
   showErrorMessage(message);
 });
 
