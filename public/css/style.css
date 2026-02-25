@@ -31,9 +31,7 @@ header {
   gap: 25px;
 }
 
-.log-in-out button {
-  font-size: 1rem;
-  font-weight: bold;
+button {
   background-color: #00bf63;
   color: #f8f9fa;
 
@@ -43,6 +41,11 @@ header {
   border-radius: 4px;
 
   cursor: pointer;
+}
+
+.log-in-out button {
+  font-size: 1rem;
+  font-weight: bold;
 }
 
 .log-in-out:hover {

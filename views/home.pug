@@ -6,11 +6,21 @@ block append css
 
 block content
     .container
-        .hero-shot
-            img(src='/static/images/hero_shot.png' alt='Hero Shot')
+        .hero-container
+            .hero-text
+                .text
+                    span TRACK
+                    br
+                    |  YOUR
+                    br
+                    |  FOOSBALL
+                    br
+                    |  PERFORMANCE
+            .hero-shot
+                img(src='/static/images/hero_shot.png' alt='Hero Shot')
 
         .register
-            a(href='/auth/register') Register now for free!
+            button(onclick="window.location.href='/auth/register';") Register now for free!
                 
         include statistics/leaderboard.pug
         
