@@ -1,35 +1,18 @@
 import { pool } from "../../models/index.js";
-import {
-  retrieveGoalCountByUserId,
-  retrieveGamesCountByUserId,
-  retrieveVictoryCountByUserId,
-} from "../../models/statistics.js";
+import { retrievePlayersStats } from "../../models/statistics.js";
 import { findUserById } from "../../models/users.js";
 
 export const viewProfilePage = async (req, res) => {
   const client = await pool.connect();
   try {
     const user = await findUserById(client, req.session.userId);
-    const goalCount = await retrieveGoalCountByUserId(
-      client,
-      req.session.userId
-    );
-    const victoryCount = await retrieveVictoryCountByUserId(
-      client,
-      req.session.userId
-    );
-    const gamesCount = await retrieveGamesCountByUserId(
-      client,
-      req.session.userId
-    );
+    const [stats] = await retrievePlayersStats(client, {
+      userId: user.id,
+    });
 
     res.render("profile", {
       title: "Profile",
-      stats: {
-        goalCount,
-        victoryCount,
-        gamesCount,
-      },
+      stats,
       user: {
         username: user.username,
         email: user.email,

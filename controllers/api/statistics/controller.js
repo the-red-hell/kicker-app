@@ -1,9 +1,5 @@
 import console from "console";
-import {
-  retrieveNumTopPlayersByAvgGoals,
-  retrieveTopPlayersByAbsolutes,
-  retrieveTopPlayersByVictories,
-} from "../../../models/statistics.js";
+import { retrievePlayersStats } from "../../../models/statistics.js";
 import { pool } from "../../../models/index.js";
 
 const DURATION_MAP = {
@@ -17,71 +13,38 @@ const DURATION_MAP = {
   all: null,
 };
 
+const SORT_BY_OPTIONS = {
+  totalGoals: "total_goals",
+  totalVictories: "total_victories",
+  totalGames: "total_games",
+  winRate: "win_rate",
+  averageGoals: "average_goals",
+};
+
 const parseDuration = (duration) => DURATION_MAP[duration] ?? null;
 
-export const topPlayersByAvgGoals = async (req, res) => {
-  const { amount, duration } = req.query;
+export const topPlayersStats = async (req, res) => {
+  const { limit, duration, sortBy } = req.query;
   const client = await pool.connect();
 
   try {
-    const numInt = parseInt(amount, 10);
-    const limit = isNaN(numInt) || numInt <= 0 ? null : numInt;
+    const limitInt = parseInt(limit, 10);
+    const limitValue = isNaN(limitInt) || limitInt <= 0 ? null : limitInt;
     const durationParsed = parseDuration(duration);
 
-    const topPlayers = await retrieveNumTopPlayersByAvgGoals(
-      client,
-      limit,
-      durationParsed
-    );
-    res.json(topPlayers);
+    if (sortBy && !Object.hasOwn(SORT_BY_OPTIONS, sortBy)) {
+      return res.status(400).json({ error: "Invalid sortBy parameter" });
+    }
+
+    const stats = await retrievePlayersStats(client, {
+      duration: durationParsed,
+      sortBy: SORT_BY_OPTIONS[sortBy] || "total_games",
+      limit: limitValue,
+    });
+    res.json(stats);
   } catch (error) {
-    console.error("Error fetching top players by goals:", error);
-    res.status(500).json({ error: "Error fetching top players" });
-  } finally {
-    client.release();
-  }
-};
-
-export const topPlayersByVictories = async (req, res) => {
-  const { amount, duration } = req.query;
-  const client = await pool.connect();
-
-  try {
-    const numInt = parseInt(amount, 10);
-    const limit = isNaN(numInt) || numInt <= 0 ? null : numInt;
-    const durationParsed = parseDuration(duration);
-
-    const topPlayers = await retrieveTopPlayersByVictories(
-      client,
-      limit,
-      durationParsed
-    );
-    res.json(topPlayers);
-  } catch (error) {
-    console.error("Error fetching top players by victories:", error);
-    res.status(500).json({ error: "Error fetching top players" });
-  } finally {
-    client.release();
-  }
-};
-export const topPlayersByAbsolutes = async (req, res) => {
-  const { amount, duration } = req.query;
-  const client = await pool.connect();
-
-  try {
-    const numInt = parseInt(amount, 10);
-    const limit = isNaN(numInt) || numInt <= 0 ? null : numInt;
-    const durationParsed = parseDuration(duration);
-
-    const topPlayers = await retrieveTopPlayersByAbsolutes(
-      client,
-      limit,
-      durationParsed
-    );
-    res.json(topPlayers);
-  } catch (error) {
-    console.error("Error fetching top players by games:", error);
-    res.status(500).json({ error: "Error fetching top players" });
+    console.error("Error fetching top players stats:", error);
+    res.status(500).json({ error: "Error fetching top players stats" });
   } finally {
     client.release();
   }

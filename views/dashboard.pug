@@ -5,10 +5,15 @@ block append css
     link(rel='stylesheet' type="text/css" href='/static/css/dashboard.css')
 
 block content
-    section#flex-box 
-        article#statistic1 Goals per game:
-        article#statistic2 Win rate:
-        article#statistic3 Total games:
+    script(src="/static/js/dashboard.js") 
+
+    section#container 
+        article.statistic#goals-per-game
+            h2 Goals per game:
+        article.statistic#win-rate
+            h2 Win rates:
+        article.statistic#total-games
+            h2 Total games:
     
        
     
