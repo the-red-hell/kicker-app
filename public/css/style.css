@@ -1,3 +1,46 @@
+/* ===== Color Variables ===== */
+:root {
+  /* Primary Colors - Spring Green */
+  --color-primary: #5fa65a;
+  --color-primary-hover: #4e904a;
+  --color-primary-light: #7ab876;
+
+  /* Secondary Colors */
+  --color-secondary: #2d4a3e;
+  --color-secondary-light: #3d5f50;
+
+  /* Accent Colors */
+  --color-accent: #f0c75e;
+  --color-accent-hover: #ddb44d;
+
+  /* Neutral Colors */
+  --color-background: #ffffff;
+  --color-surface: #f8f9fa;
+  --color-surface-alt: #e9ecef;
+
+  /* Text Colors */
+  --color-text-primary: #212529;
+  --color-text-secondary: #495057;
+  --color-text-light: #f8f9fa;
+  --color-text-muted: #6c757d;
+
+  /* UI Colors */
+  --color-header: #2d4a3e;
+  --color-footer: #dee2e6;
+  --color-border: #ced4da;
+
+  /* Shadows */
+  --shadow-sm: 0 2px 4px rgba(0, 0, 0, 0.08);
+  --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.1);
+  --shadow-lg: 0 8px 24px rgba(0, 0, 0, 0.12);
+
+  /* Border Radius */
+  --radius-sm: 4px;
+  --radius-md: 8px;
+  --radius-lg: 16px;
+  --radius-xl: 24px;
+}
+
 html {
   height: 100%;
 }
@@ -6,7 +49,8 @@ body {
   font-family: Arial, sans-serif;
   margin: 0;
   padding: 0;
-  background-color: #ffffff;
+  background-color: var(--color-background);
+  color: var(--color-text-primary);
   display: flex;
   flex-direction: column;
   min-height: 100%;
@@ -14,7 +58,7 @@ body {
 
 header {
   z-index: 1;
-  background-color: #303030;
+  background-color: var(--color-header);
   padding: 2vh;
   position: sticky;
   top: 0;
@@ -32,24 +76,25 @@ header {
 }
 
 button {
-  background-color: #00bf63;
-  color: #f8f9fa;
+  background-color: var(--color-primary);
+  color: var(--color-text-light);
 
   display: block;
   padding: 14px 16px;
   border: none;
-  border-radius: 4px;
+  border-radius: var(--radius-sm);
 
   cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+button:hover {
+  background-color: var(--color-primary-hover);
 }
 
 .log-in-out button {
   font-size: 1rem;
   font-weight: bold;
-}
-
-.log-in-out:hover {
-  background-color: #208051;
 }
 
 #spacer {
@@ -72,7 +117,7 @@ footer {
   padding-left: 3vw;
   padding-bottom: 2vh;
   padding-top: 1vh;
-  background-color: #adadad;
+  background-color: var(--color-footer);
   margin-top: auto;
 }
 
