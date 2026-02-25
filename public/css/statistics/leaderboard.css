@@ -1,5 +1,10 @@
 :root {
   --first-place-size: 200px;
+
+  /* Leaderboard Colors */
+  --color-gold: #f4c543;
+  --color-silver: #a8b5c4;
+  --color-bronze: #c9a063;
 }
 
 .leader-board-container {
@@ -15,27 +20,36 @@
 }
 
 .place-container {
-  border-radius: 10px;
+  border-radius: var(--radius-md, 10px);
   padding: 10px;
   height: calc(3rem + 1.5rem + 20px);
-  width: 30%;
+  min-width: 30%;
   text-align: center;
   display: flex;
   flex-direction: column;
   align-items: center;
+  box-shadow: var(--shadow-sm, 0 2px 4px rgba(0, 0, 0, 0.08));
+
+  transition:
+    height 0.5s ease,
+    transform 0.2s ease;
+}
+
+.place-container:hover {
+  transform: translateY(-3px);
+  box-shadow: var(--shadow-md, 0 4px 12px rgba(0, 0, 0, 0.1));
 }
 
 .place-container#first-place {
-  background-color: gold;
-  height: var(--first-place-size);
+  background: linear-gradient(135deg, var(--color-gold) 0%, #e6b835 100%);
 }
 
 .place-container#second-place {
-  background-color: silver;
+  background: linear-gradient(135deg, var(--color-silver) 0%, #929eab 100%);
 }
 
 .place-container#third-place {
-  background-color: #cd7f32; /* bronze */
+  background: linear-gradient(135deg, var(--color-bronze) 0%, #b08c52 100%);
 }
 
 .place-score {
