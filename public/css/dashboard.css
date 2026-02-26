@@ -29,6 +29,7 @@
   background-color: var(--color-surface-alt);
   border-radius: var(--radius-md);
   padding: 4px;
+  margin: 5px;
   box-shadow: var(--shadow-lg);
 }
 
@@ -65,7 +66,7 @@
 
 /* Active/checked state */
 .duration-button input[type="radio"]:checked + label {
-  background-color: var(--color-primary);
+  background-color: var(--color-primary-hover);
   color: var(--color-text-light);
   box-shadow: var(--shadow-sm);
 }
