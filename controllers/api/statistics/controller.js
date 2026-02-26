@@ -9,6 +9,7 @@ const DURATION_MAP = {
   "30d": "30 days",
   "1m": "1 month",
   "3m": "3 months",
+  "6m": "6 months",
   "1y": "1 year",
   all: null,
 };
