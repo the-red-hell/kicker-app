@@ -1,9 +1,63 @@
 extends layout
 
+block append css
+  link(rel='stylesheet' type="text/css" href='/static/css/profile.css')
+  link(rel='stylesheet' type="text/css" href='/static/css/background.css')
+
 block content
-  h1 Your Profile
-  p Welcome, #{user.username}!
-  p Your email: #{user.email}
-  p Account created on: #{new Date(user.createdAt).toLocaleDateString()}
-  br
-  p You have played #{stats.totalGames} games, won #{stats.totalVictories} of them, and scored #{stats.totalGoals} goals.
+  .profile-container
+    //- Profile Header
+    .profile-header
+      if stats.imageUrl
+        img.profile-avatar(src=stats.imageUrl alt=user.username)
+      else
+        .profile-avatar-placeholder= user.username.charAt(0).toUpperCase()
+      .profile-info
+        h1= user.username
+        p.email= user.email
+        p.member-since Member since #{new Date(user.createdAt).toLocaleDateString('en-US', { month: 'long', year: 'numeric' })}
+
+    //- Stats Grid
+    .stats-grid
+      .stat-card.primary
+        p.stat-value= stats.totalGames
+        p.stat-label Games Played
+
+      .stat-card.secondary
+        p.stat-value= stats.totalVictories
+        p.stat-label Victories
+
+      .stat-card.accent
+        p.stat-value= stats.totalGoals
+        p.stat-label Total Goals
+
+      .stat-card
+        p.stat-value= stats.averageGoals.toFixed(1)
+        p.stat-label Avg Goals/Game
+
+    //- Performance Summary
+    .performance-summary
+      h2 Performance
+      .performance-bar
+        .performance-bar-label
+          span Win Rate
+          span #{stats.winRate}%
+        .performance-bar-track
+          .performance-bar-fill(data-width=`${Math.min(stats.winRate, 100)}%`)
+      
+      .performance-bar
+        .performance-bar-label
+          span Average Goals
+          span #{stats.averageGoals.toFixed(1)} / 10
+        .performance-bar-track
+          .performance-bar-fill(data-width=`${Math.min(stats.averageGoals * 10, 100)}%`)
+
+    script.
+      // for transition of the performance bars width
+      document.addEventListener('DOMContentLoaded', () => {
+        document.querySelectorAll('.performance-bar-fill').forEach(bar => {
+          requestAnimationFrame(() => {
+            bar.style.width = bar.dataset.width;
+          });
+        });
+      });
