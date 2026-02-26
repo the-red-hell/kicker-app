@@ -4,7 +4,7 @@ let winRates = [];
 let totalGames = [];
 
 document.addEventListener("DOMContentLoaded", async () => {
-  await getStatistics(undefined);
+  await getStatistics("3m");
   updateAllStatistics();
 
   const radioButtons = document.querySelectorAll('input[name="duration"]');
