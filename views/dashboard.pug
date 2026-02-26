@@ -6,14 +6,27 @@ block append css
 
 block content
     script(src="/static/js/dashboard.js") 
-
-    section#container 
-        article.statistic#goals-per-game
-            h2 Goals per game:
-        article.statistic#win-rate
-            h2 Win rates:
-        article.statistic#total-games
-            h2 Total games:
     
-       
-    
+    .container
+        .duration-button
+            h2 Duration:
+            // radio buttons for 24h, 7d, 1m, 3m, 1y, all time
+            input(type="radio" id="24h" name="duration" value="24h")
+            label(for="24h") 24h
+            input(type="radio" id="7d" name="duration" value="7d")
+            label(for="7d") 7d
+            input(type="radio" id="1m" name="duration" value="1m")
+            label(for="1m") 1m
+            input(type="radio" id="3m" name="duration" value="3m")
+            label(for="3m") 3m
+            input(type="radio" id="1y" name="duration" value="1y")
+            label(for="1y") 1y
+            input(type="radio" id="all" name="duration" value="all" checked)
+            label(for="all") All time
+        .statistics-container
+            .statistic#goals-per-game
+                h2 Goals per game:
+            .statistic#win-rate
+                h2 Win rates:
+            .statistic#total-games
+                h2 Total games:
