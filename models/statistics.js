@@ -36,7 +36,7 @@ export const retrievePlayersStats = async (
        JOIN games g ON gp.game_id = g.id
        LEFT JOIN winning_teams_view wtv ON gp.game_id = wtv.game_id AND gp.team = wtv.winning_team
        WHERE ($1::int IS NULL OR gp.user_id = $1)
-         AND ($2::interval IS NULL OR g.created_at >= NOW() - $2::interval)
+         AND ($2::interval IS NULL OR g.ended_at >= NOW() - $2::interval)
        GROUP BY gp.user_id, u.username, u.image_url
        ORDER BY ${sortBy} DESC
        LIMIT $3`,
