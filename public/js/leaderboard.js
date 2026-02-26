@@ -7,7 +7,7 @@ document.addEventListener("DOMContentLoaded", async () => {
 
   places.forEach((place, index) => {
     const entry = data[index];
-    place.score.textContent = entry.averageGoals;
+    place.score.textContent = entry.winRate ? `${entry.winRate}%` : "0%";
     place.name.textContent = entry.username;
     place.container.style.height = `calc(3rem + 1.5rem + 20px + ${entry.winRate / maxWinRate} * var(--first-place-size))`;
   });
@@ -40,6 +40,5 @@ function getPlaceElements() {
 async function getPlacesData() {
   const res = await fetch("/api/statistics/top-players?limit=3&sortBy=winRate");
   const data = await res.json();
-  data.sort((a, b) => b.winRate - a.winRate);
   return data.slice(0, 3);
 }
