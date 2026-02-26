@@ -3,13 +3,13 @@ document.addEventListener("DOMContentLoaded", async () => {
   const places = getPlaceElements();
 
   const data = await getPlacesData();
-  const maxGoals = data[0].averageGoals;
+  const maxWinRate = data[0].winRate || 1;
 
   places.forEach((place, index) => {
     const entry = data[index];
     place.score.textContent = entry.averageGoals;
     place.name.textContent = entry.username;
-    place.container.style.height = `calc(3rem + 1.5rem + 20px + ${entry.averageGoals / maxGoals} * var(--first-place-size))`;
+    place.container.style.height = `calc(3rem + 1.5rem + 20px + ${entry.winRate / maxWinRate} * var(--first-place-size))`;
   });
 });
 
@@ -38,8 +38,8 @@ function getPlaceElements() {
 }
 
 async function getPlacesData() {
-  const res = await fetch("/api/statistics/top-avg-goals?amount=3");
+  const res = await fetch("/api/statistics/top-players?limit=3&sortBy=winRate");
   const data = await res.json();
-  data.sort((a, b) => b.averageGoals - a.averageGoals);
+  data.sort((a, b) => b.winRate - a.winRate);
   return data.slice(0, 3);
 }
