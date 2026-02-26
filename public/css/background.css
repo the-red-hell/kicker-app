@@ -1,24 +1,31 @@
 #page-content {
   position: relative;
   overflow: hidden;
+  min-height: 80vh;
+}
+
+#page-content::before {
+  content: "";
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
   background-repeat: no-repeat;
   background-position: center;
   background-size: cover;
-  width: 100vw;
-  height: 80vh;
   z-index: -1;
   filter: contrast(70%);
-  background-attachment: fixed;
 }
 
 @media screen and (max-width: 900px) {
-  #page-content {
+  #page-content::before {
     background-image: url("/static/images/background_vertical.png");
   }
 }
 
 @media screen and (min-width: 901px) {
-  #page-content {
+  #page-content::before {
     background-image: url("/static/images/background_horizontal.png");
   }
 }

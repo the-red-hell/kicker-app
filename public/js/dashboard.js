@@ -6,6 +6,17 @@ let totalGames = [];
 document.addEventListener("DOMContentLoaded", async () => {
   await getStatistics(undefined);
   updateAllStatistics();
+
+  const radioButtons = document.querySelectorAll('input[name="duration"]');
+  radioButtons.forEach((radioButton) => {
+    radioButton.addEventListener("click", () => {
+      if (radioButton.checked) {
+        getStatistics(radioButton.value).then(() => {
+          updateAllStatistics();
+        });
+      }
+    });
+  });
 });
 
 function updateAllStatistics() {
@@ -34,15 +45,24 @@ function updateTotalGames() {
 
 function updateSingleStatistic(usernames, values, containerId) {
   const container = document.getElementById(containerId);
+
+  // remove all children of container
+  while (container.lastChild !== document.querySelector(`#${containerId} h2`)) {
+    container.removeChild(container.lastChild);
+  }
+
   for (let i = 0; i < usernames.length; i++) {
+    // create a line
     const line = document.createElement("div");
     line.classList.add("line");
 
+    // create a span for username and value
     const userName = document.createElement("span");
     userName.textContent = usernames[i];
     const value = document.createElement("span");
     value.textContent = values[i];
 
+    // append to container
     line.appendChild(userName);
     line.appendChild(value);
     container.appendChild(line);
