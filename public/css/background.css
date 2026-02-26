@@ -1,7 +1,6 @@
 #page-content {
   position: relative;
   overflow: hidden;
-  min-height: 80vh;
 }
 
 #page-content::before {
