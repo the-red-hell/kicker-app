@@ -1,0 +1,129 @@
+/* Green gradient background */
+main#page-content {
+  background: linear-gradient(
+    135deg,
+    var(--color-primary-light) 0%,
+    var(--color-primary) 50%,
+    var(--color-secondary) 100%
+  );
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 20px;
+  box-sizing: border-box;
+}
+
+.container {
+  background-color: var(--color-background);
+  padding: 32px 40px;
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-lg);
+  width: 100%;
+  max-width: 380px;
+
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.container h1 {
+  margin: 0 0 16px 0;
+  text-align: center;
+  color: var(--color-text-primary);
+  font-size: 1.75rem;
+}
+
+/* Form styling */
+form {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+form div {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+form label {
+  font-weight: 600;
+  color: var(--color-text-secondary);
+  font-size: 0.9rem;
+}
+
+form input[type="text"],
+form input[type="email"],
+form input[type="password"] {
+  padding: 10px 14px;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-sm);
+  font-size: 1rem;
+  transition:
+    border-color 0.2s ease,
+    box-shadow 0.2s ease;
+  background-color: var(--color-surface);
+}
+
+form input[type="text"]:focus,
+form input[type="email"]:focus,
+form input[type="password"]:focus {
+  outline: none;
+  border-color: var(--color-primary);
+  box-shadow: 0 0 0 3px rgba(95, 166, 90, 0.2);
+}
+
+/* Checkbox styling */
+form div:has(input[type="checkbox"]) {
+  flex-direction: row;
+  align-items: center;
+  gap: 8px;
+}
+
+form input[type="checkbox"] {
+  width: 18px;
+  height: 18px;
+  accent-color: var(--color-primary);
+  cursor: pointer;
+}
+
+/* Submit button */
+form button[type="submit"] {
+  margin-top: 4px;
+  padding: 12px 20px;
+  font-size: 1rem;
+  font-weight: 700;
+  width: 100%;
+  border-radius: var(--radius-md);
+}
+
+/* Links */
+.container p {
+  text-align: center;
+  color: var(--color-text-muted);
+  margin: 4px 0 0 0;
+  font-size: 0.9rem;
+}
+
+.container a {
+  color: var(--color-primary);
+  text-decoration: none;
+  font-weight: 600;
+  transition: color 0.2s ease;
+}
+
+.container a:hover {
+  color: var(--color-primary-hover);
+  text-decoration: underline;
+}
+
+/* Remove unnecessary br spacing */
+form br {
+  display: none;
+}
+
+@media screen and (max-width: 480px) {
+  .container {
+    padding: 24px 20px;
+  }
+}
