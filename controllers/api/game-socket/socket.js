@@ -10,25 +10,25 @@ import undoGoal from "./goals/undo.js";
  * @param {Socket} socket
  */
 const gameSocket = (io, socket) => {
-  const session = socket.request.session;
+    const session = socket.request.session;
 
-  if (!session || !session.userId) {
-    console.log("Unauthenticated user attempted to connect to game socket");
-    socket.disconnect();
-    return;
-  }
+    if (!session || !session.userId) {
+        console.log("Unauthenticated user attempted to connect to game socket");
+        socket.disconnect();
+        return;
+    }
 
-  socket.on("joinGame", async ({ tableId, team, position }) => {
-    await joinGame(io, socket, tableId, position, team);
-  });
+    socket.on("joinGame", async ({ tableId, team, position }) => {
+        await joinGame(io, socket, tableId, position, team);
+    });
 
-  socket.on("goalScored", async ({ tableId }) => {
-    await goalScored(io, socket, tableId);
-  });
+    socket.on("goalScored", async ({ tableId }) => {
+        await goalScored(io, socket, tableId);
+    });
 
-  socket.on("undoGoal", async ({ tableId }) => {
-    await undoGoal(io, socket, tableId);
-  });
+    socket.on("undoGoal", async ({ tableId }) => {
+        await undoGoal(io, socket, tableId);
+    });
 };
 
 export const getRoomName = (tableId) => `table-${tableId}`;

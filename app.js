@@ -28,29 +28,29 @@ app.set("view engine", "pug");
 
 // session management
 const sessionMiddleware = expressSession({
-  secret: process.env.SESSION_COOKIE_SECRET,
-  resave: false,
-  saveUninitialized: false,
-  cookie: { maxAge: LOGOUT_TIME },
-  store: new PG_SESSION({
-    pool: pgPool,
-    createTableIfMissing: true,
-    tableName: "user_session",
-    ttl: LOGOUT_TIME,
-    autoRemoveInterval: 60 * 60 * 1000, // Check for expired sessions every hour
-  }),
+    secret: process.env.SESSION_COOKIE_SECRET,
+    resave: false,
+    saveUninitialized: false,
+    cookie: { maxAge: LOGOUT_TIME },
+    store: new PG_SESSION({
+        pool: pgPool,
+        createTableIfMissing: true,
+        tableName: "user_session",
+        ttl: LOGOUT_TIME,
+        autoRemoveInterval: 60 * 60 * 1000, // Check for expired sessions every hour
+    }),
 });
 
 app.use(sessionMiddleware);
 socketIo.use((socket, next) => {
-  sessionMiddleware(socket.request, {}, next);
+    sessionMiddleware(socket.request, {}, next);
 });
 
 app.use("/", mainRouter);
 socketIo.on("connection", (socket) => gameSocket(socketIo, socket));
 
 server.listen(PORT, () => {
-  console.log(
-    `Server started on: ${server.address().address}, port: ${server.address().port}`
-  );
+    console.log(
+        `Server started on: ${server.address().address}, port: ${server.address().port}`
+    );
 });

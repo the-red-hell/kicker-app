@@ -2,14 +2,14 @@ import { defineConfig } from "eslint/config";
 import js from "@eslint/js";
 
 export default defineConfig([
-  {
-    files: ["**/*.js"],
-    plugins: {
-      js,
+    {
+        files: ["**/*.js"],
+        plugins: {
+            js,
+        },
+        rules: {
+            "no-undef": "warn",
+        },
+        extends: ["js/recommended"],
     },
-    rules: {
-      "no-undef": "warn",
-    },
-    extends: ["js/recommended"],
-  },
 ]);

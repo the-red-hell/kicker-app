@@ -1,30 +1,30 @@
 #page-content {
-  position: relative;
-  overflow: hidden;
+    position: relative;
+    overflow: hidden;
 }
 
 #page-content::before {
-  content: "";
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100vw;
-  height: 100vh;
-  background-repeat: no-repeat;
-  background-position: center;
-  background-size: cover;
-  z-index: -1;
-  filter: contrast(70%);
+    content: "";
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background-repeat: no-repeat;
+    background-position: center;
+    background-size: cover;
+    z-index: -1;
+    filter: contrast(70%);
 }
 
 @media screen and (max-width: 900px) {
-  #page-content::before {
-    background-image: url("/static/images/background_vertical.png");
-  }
+    #page-content::before {
+        background-image: url("/static/images/background_vertical.png");
+    }
 }
 
 @media screen and (min-width: 901px) {
-  #page-content::before {
-    background-image: url("/static/images/background_horizontal.png");
-  }
+    #page-content::before {
+        background-image: url("/static/images/background_horizontal.png");
+    }
 }

@@ -4,11 +4,11 @@ import { logout } from "./controller.js";
 const authRouter = new Router();
 
 authRouter.get("/login", (_req, res) => {
-  res.render("auth/login", { title: "Login" });
+    res.render("auth/login", { title: "Login" });
 });
 
 authRouter.get("/register", (_req, res) => {
-  res.render("auth/register", { title: "Register" });
+    res.render("auth/register", { title: "Register" });
 });
 
 authRouter.get("/logout", logout);

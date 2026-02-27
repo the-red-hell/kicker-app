@@ -11,39 +11,45 @@ import { possiblePositions, possibleTeams } from "../../models/types.js";
  * @param {Response} res
  */
 export const joinGame = async (req, res) => {
-  const client = await pool.connect();
-  try {
-    const { tableId } = req.params;
-    let { position, team } = req.query;
+    const client = await pool.connect();
+    try {
+        const { tableId } = req.params;
+        let { position, team } = req.query;
 
-    // is the link valid
-    if (
-      !possiblePositions.includes(position) ||
-      !possibleTeams.includes(team)
-    ) {
-      const originalUrl = req.headers["x-original-uri"] || req.originalUrl;
-      return res.status(400).render("404", {
-        title: "404 - Not Found",
-        originalUrl,
-        message: "Invalid position or team in the URL",
-      });
+        // is the link valid
+        if (
+            !possiblePositions.includes(position) ||
+            !possibleTeams.includes(team)
+        ) {
+            const originalUrl =
+                req.headers["x-original-uri"] || req.originalUrl;
+            return res.status(400).render("404", {
+                title: "404 - Not Found",
+                originalUrl,
+                message: "Invalid position or team in the URL",
+            });
+        }
+
+        const userInGame = await getUserTeamPos(
+            tableId,
+            req.session.userId,
+            position,
+            team
+        );
+        if (userInGame) {
+            position = userInGame.position;
+            team = userInGame.team;
+        }
+
+        res.render("game/activeGame", {
+            title: "Game",
+            tableId,
+            position,
+            team,
+        });
+    } finally {
+        client.release();
     }
-
-    const userInGame = await getUserTeamPos(
-      tableId,
-      req.session.userId,
-      position,
-      team
-    );
-    if (userInGame) {
-      position = userInGame.position;
-      team = userInGame.team;
-    }
-
-    res.render("game/activeGame", { title: "Game", tableId, position, team });
-  } finally {
-    client.release();
-  }
 };
 
 /**
@@ -52,7 +58,7 @@ export const joinGame = async (req, res) => {
  * @param {Response} res
  */
 export const gamePage = (req, res) => {
-  res.render("game", { title: "Game" });
+    res.render("game", { title: "Game" });
 };
 
 /**
@@ -65,22 +71,25 @@ export const gamePage = (req, res) => {
  *          - undefined if the user is not in-game and the position/team is available
  */
 async function getUserTeamPos(tableId, userId, position, team) {
-  const client = await pool.connect();
-  try {
-    const game = await retrieveCurrentGameByTableId(client, tableId);
+    const client = await pool.connect();
+    try {
+        const game = await retrieveCurrentGameByTableId(client, tableId);
 
-    if (game) {
-      const users = await retrieveUsersByGameId(client, game.id);
-      const userInGame = users.find((user) => user.user_id === userId);
-      const isPositionAndTeamTaken = users.some(
-        (user) => user.position === position && user.team === team
-      );
+        if (game) {
+            const users = await retrieveUsersByGameId(client, game.id);
+            const userInGame = users.find((user) => user.user_id === userId);
+            const isPositionAndTeamTaken = users.some(
+                (user) => user.position === position && user.team === team
+            );
 
-      if (userInGame && (isPositionAndTeamTaken || game.status === "active")) {
-        return { position: userInGame.position, team: userInGame.team }; // TODO: maybe show a message
-      }
+            if (
+                userInGame &&
+                (isPositionAndTeamTaken || game.status === "active")
+            ) {
+                return { position: userInGame.position, team: userInGame.team }; // TODO: maybe show a message
+            }
+        }
+    } finally {
+        client.release();
     }
-  } finally {
-    client.release();
-  }
 }

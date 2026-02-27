@@ -1,5 +1,5 @@
- const termsAndConditions = (req, res) => {
+const termsAndConditions = (req, res) => {
     res.render("terms", { title: "Terms and Conditions" });
-  };
+};
 
-  export default termsAndConditions;
+export default termsAndConditions;
