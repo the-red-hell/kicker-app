@@ -12,13 +12,13 @@ import notFoundPage from "./404.js";
 const mainRouter = Router();
 
 mainRouter.use((req, res, next) => {
-  res.locals.loggedIn = req.session.userId ? true : false;
-  next();
+    res.locals.loggedIn = req.session.userId ? true : false;
+    next();
 });
 
 mainRouter.get("/", (_req, res) => {
-  res.render("home", { title: "Home" });
-  console.log("Received a request at /");
+    res.render("home", { title: "Home" });
+    console.log("Received a request at /");
 });
 
 mainRouter.use("/profile", profileRouter);

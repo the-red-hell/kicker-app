@@ -1,5 +1,5 @@
- const aboutUs = (req, res) => {
+const aboutUs = (req, res) => {
     res.render("aboutUs", { title: "aboutUs" });
-  };
+};
 
-  export default aboutUs;
+export default aboutUs;

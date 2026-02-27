@@ -1,44 +1,46 @@
 /* eslint-disable no-undef */
 document.addEventListener("DOMContentLoaded", async () => {
-  const places = getPlaceElements();
+    const places = getPlaceElements();
 
-  const data = await getPlacesData();
-  const maxWinRate = data[0].winRate || 1;
+    const data = await getPlacesData();
+    const maxWinRate = data[0].winRate || 1;
 
-  places.forEach((place, index) => {
-    const entry = data[index];
-    place.score.textContent = entry.winRate ? `${entry.winRate}%` : "0%";
-    place.name.textContent = entry.username;
-    place.container.style.height = `calc(3rem + 1.5rem + 20px + ${entry.winRate / maxWinRate} * var(--first-place-size))`;
-  });
+    places.forEach((place, index) => {
+        const entry = data[index];
+        place.score.textContent = entry.winRate ? `${entry.winRate}%` : "0%";
+        place.name.textContent = entry.username;
+        place.container.style.height = `calc(3rem + 1.5rem + 20px + ${entry.winRate / maxWinRate} * var(--first-place-size))`;
+    });
 });
 
 function getPlaceElements() {
-  const firstPlaceContainer = document.getElementById("first-place");
-  const secondPlaceContainer = document.getElementById("second-place");
-  const thirdPlaceContainer = document.getElementById("third-place");
+    const firstPlaceContainer = document.getElementById("first-place");
+    const secondPlaceContainer = document.getElementById("second-place");
+    const thirdPlaceContainer = document.getElementById("third-place");
 
-  return [
-    {
-      container: firstPlaceContainer,
-      score: firstPlaceContainer.querySelector(".score"),
-      name: firstPlaceContainer.querySelector(".name"),
-    },
-    {
-      container: secondPlaceContainer,
-      score: secondPlaceContainer.querySelector(".score"),
-      name: secondPlaceContainer.querySelector(".name"),
-    },
-    {
-      container: thirdPlaceContainer,
-      score: thirdPlaceContainer.querySelector(".score"),
-      name: thirdPlaceContainer.querySelector(".name"),
-    },
-  ];
+    return [
+        {
+            container: firstPlaceContainer,
+            score: firstPlaceContainer.querySelector(".score"),
+            name: firstPlaceContainer.querySelector(".name"),
+        },
+        {
+            container: secondPlaceContainer,
+            score: secondPlaceContainer.querySelector(".score"),
+            name: secondPlaceContainer.querySelector(".name"),
+        },
+        {
+            container: thirdPlaceContainer,
+            score: thirdPlaceContainer.querySelector(".score"),
+            name: thirdPlaceContainer.querySelector(".name"),
+        },
+    ];
 }
 
 async function getPlacesData() {
-  const res = await fetch("/api/statistics/top-players?limit=3&sortBy=winRate");
-  const data = await res.json();
-  return data.slice(0, 3);
+    const res = await fetch(
+        "/api/statistics/top-players?limit=3&sortBy=winRate"
+    );
+    const data = await res.json();
+    return data.slice(0, 3);
 }

@@ -2,13 +2,13 @@
 import { Client } from "pg";
 
 const DEFAULT_STATS = {
-  username: null,
-  imageUrl: null,
-  totalGames: 0,
-  totalGoals: 0,
-  totalVictories: 0,
-  averageGoals: 0,
-  winRate: 0,
+    username: null,
+    imageUrl: null,
+    totalGames: 0,
+    totalGoals: 0,
+    totalVictories: 0,
+    averageGoals: 0,
+    winRate: 0,
 };
 
 /**
@@ -18,11 +18,16 @@ const DEFAULT_STATS = {
  * @returns {Promise<{username: string, imageUrl: string, totalGames: number, totalGoals: number, totalVictories: number, averageGoals: number, winRate: number}[]>}
  */
 export const retrievePlayersStats = async (
-  client,
-  { userId = null, duration = null, sortBy = "total_games", limit = null } = {}
+    client,
+    {
+        userId = null,
+        duration = null,
+        sortBy = "total_games",
+        limit = null,
+    } = {}
 ) => {
-  const res = await client.query(
-    `SELECT 
+    const res = await client.query(
+        `SELECT 
         gp.user_id,
         u.username, 
         u.image_url, 
@@ -40,20 +45,20 @@ export const retrievePlayersStats = async (
        GROUP BY gp.user_id, u.username, u.image_url
        ORDER BY ${sortBy} DESC
        LIMIT $3`,
-    [userId, duration, limit]
-  );
+        [userId, duration, limit]
+    );
 
-  if (res.rows.length === 0 && userId !== null) {
-    return [DEFAULT_STATS];
-  }
+    if (res.rows.length === 0 && userId !== null) {
+        return [DEFAULT_STATS];
+    }
 
-  return res.rows.map((row) => ({
-    username: row.username,
-    imageUrl: row.image_url,
-    totalGames: parseInt(row.total_games, 10),
-    totalGoals: parseInt(row.total_goals, 10),
-    totalVictories: parseInt(row.total_victories, 10),
-    averageGoals: parseFloat(row.average_goals) || 0,
-    winRate: parseFloat(row.win_rate) || 0,
-  }));
+    return res.rows.map((row) => ({
+        username: row.username,
+        imageUrl: row.image_url,
+        totalGames: parseInt(row.total_games, 10),
+        totalGoals: parseInt(row.total_goals, 10),
+        totalVictories: parseInt(row.total_victories, 10),
+        averageGoals: parseFloat(row.average_goals) || 0,
+        winRate: parseFloat(row.win_rate) || 0,
+    }));
 };

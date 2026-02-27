@@ -2,30 +2,30 @@
 import { Client } from "pg";
 
 export const addUserToGame = async (client, gameId, userId, position, team) => {
-  const res = await client.query(
-    `INSERT INTO game_players (game_id, user_id, position, team, goals) 
+    const res = await client.query(
+        `INSERT INTO game_players (game_id, user_id, position, team, goals) 
      VALUES ($1, $2, $3, $4, 0) 
      RETURNING *`,
-    [gameId, userId, position, team]
-  );
-  return res.rows[0];
+        [gameId, userId, position, team]
+    );
+    return res.rows[0];
 };
 
 export const updateUserFromGame = async (
-  client,
-  gameId,
-  userId,
-  position,
-  team
+    client,
+    gameId,
+    userId,
+    position,
+    team
 ) => {
-  const res = await client.query(
-    `UPDATE game_players 
+    const res = await client.query(
+        `UPDATE game_players 
      SET position = $3, team = $4
      WHERE game_id = $1 AND user_id = $2
      RETURNING *`,
-    [gameId, userId, position, team]
-  );
-  return res.rows[0];
+        [gameId, userId, position, team]
+    );
+    return res.rows[0];
 };
 
 /**
@@ -36,13 +36,13 @@ export const updateUserFromGame = async (
  * @returns {Promise<Array<{ id: string, user_id: string, position: string, team: string, goals: number, username: string }>>} an array of users in the game
  */
 export const retrieveUsersByGameId = async (client, gameId) => {
-  const res = await client.query(
-    `SELECT gp.*, u.username FROM game_players gp
+    const res = await client.query(
+        `SELECT gp.*, u.username FROM game_players gp
      JOIN users u ON gp.user_id = u.id
      WHERE gp.game_id = $1`,
-    [gameId]
-  );
-  return res.rows;
+        [gameId]
+    );
+    return res.rows;
 };
 
 /**
@@ -51,13 +51,13 @@ export const retrieveUsersByGameId = async (client, gameId) => {
  * @param {string} userId
  */
 export const removeUserFromGame = async (client, gameId, userId) => {
-  await client.query(
-    `DELETE FROM game_players gp
+    await client.query(
+        `DELETE FROM game_players gp
      USING games g
      WHERE gp.game_id = g.id
       AND gp.game_id = $1
       AND gp.user_id = $2
       AND g.status = 'waiting'`,
-    [gameId, userId]
-  );
+        [gameId, userId]
+    );
 };

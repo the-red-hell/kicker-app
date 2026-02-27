@@ -1,7 +1,7 @@
 import {
-  retrieveCurrentGameByTableId,
-  retrieveGoalsPerTeamByGameId,
-  undoGoalInGame,
+    retrieveCurrentGameByTableId,
+    retrieveGoalsPerTeamByGameId,
+    undoGoalInGame,
 } from "../../../../models/games.js";
 import { pool } from "../../../../models/index.js";
 // eslint-disable-next-line no-unused-vars
@@ -19,26 +19,26 @@ import { getRoomName } from "../socket.js";
  * @param {string} tableId
  */
 async function undoGoal(io, socket, tableId) {
-  const client = await pool.connect();
-  try {
-    await client.query("BEGIN");
+    const client = await pool.connect();
+    try {
+        await client.query("BEGIN");
 
-    if (!(await isUserInGame(client, socket, tableId)))
-      await client.query("ROLLBACK");
-    else {
-      const updatedGoals = await handleUndoGoal(client, tableId);
-      const roomName = getRoomName(tableId);
-      await emitGoalUpdate(io, roomName, updatedGoals);
-      io.to(roomName).emit("undoGoal");
-      await client.query("COMMIT");
+        if (!(await isUserInGame(client, socket, tableId)))
+            await client.query("ROLLBACK");
+        else {
+            const updatedGoals = await handleUndoGoal(client, tableId);
+            const roomName = getRoomName(tableId);
+            await emitGoalUpdate(io, roomName, updatedGoals);
+            io.to(roomName).emit("undoGoal");
+            await client.query("COMMIT");
+        }
+    } catch (error) {
+        await client.query("ROLLBACK");
+        console.error("Error undoing goal:", error);
+        socket.emit("error", "Error undoing goal!");
+    } finally {
+        client.release();
     }
-  } catch (error) {
-    await client.query("ROLLBACK");
-    console.error("Error undoing goal:", error);
-    socket.emit("error", "Error undoing goal!");
-  } finally {
-    client.release();
-  }
 }
 
 /**
@@ -53,11 +53,11 @@ async function undoGoal(io, socket, tableId) {
  * @returns the updated game if successful, undefined otherwise
  */
 async function handleUndoGoal(client, tableId) {
-  const game = await retrieveCurrentGameByTableId(client, tableId);
+    const game = await retrieveCurrentGameByTableId(client, tableId);
 
-  await undoGoalInGame(client, game.id);
-  const updatedGoals = await retrieveGoalsPerTeamByGameId(client, game.id);
-  return updatedGoals;
+    await undoGoalInGame(client, game.id);
+    const updatedGoals = await retrieveGoalsPerTeamByGameId(client, game.id);
+    return updatedGoals;
 }
 
 export default undoGoal;

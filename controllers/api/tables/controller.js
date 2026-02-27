@@ -15,61 +15,64 @@ const JOIN_PATH = "/game";
  * @returns qr code image as PNG
  */
 export const generateQRCode = async (req, res) => {
-  const { tableId } = req.params;
-  const { position, team } = req.query;
-  const client = await pool.connect();
-  try {
-    // position doesn't exist
-    if (!possiblePositions.includes(position)) {
-      return res.status(400).json({ error: "Invalid position" });
+    const { tableId } = req.params;
+    const { position, team } = req.query;
+    const client = await pool.connect();
+    try {
+        // position doesn't exist
+        if (!possiblePositions.includes(position)) {
+            return res.status(400).json({ error: "Invalid position" });
+        }
+        // team doesn't exist
+        if (!possibleTeams.includes(team)) {
+            return res.status(400).json({ error: "Invalid team" });
+        }
+
+        // table doesn't exist
+        const table = await retrieveTableById(client, tableId);
+        if (!table) {
+            return res.status(404).json({ error: "Table not found" });
+        }
+
+        const filename = `table-${tableId}-${team}-${position}.png`;
+        const queryParams = new URLSearchParams({ position, team });
+        const url = `${req.protocol}://${req.get("host")}${JOIN_PATH}/${tableId}?${queryParams.toString()}`;
+
+        const image = await QRCode.toDataURL(url, {
+            type: "png",
+            width: 500,
+            margin: 2,
+        });
+
+        // set headers for file download
+        res.setHeader("Content-Type", "image/png");
+        res.setHeader(
+            "Content-Disposition",
+            `attachment; filename="${filename}"`
+        );
+
+        return res.send(image);
+    } catch (error) {
+        console.error("Error generating QR code:", error);
+        return res.status(500).json({ error: "Internal Server Error" });
+    } finally {
+        client.release();
     }
-    // team doesn't exist
-    if (!possibleTeams.includes(team)) {
-      return res.status(400).json({ error: "Invalid team" });
-    }
-
-    // table doesn't exist
-    const table = await retrieveTableById(client, tableId);
-    if (!table) {
-      return res.status(404).json({ error: "Table not found" });
-    }
-
-    const filename = `table-${tableId}-${team}-${position}.png`;
-    const queryParams = new URLSearchParams({ position, team });
-    const url = `${req.protocol}://${req.get("host")}${JOIN_PATH}/${tableId}?${queryParams.toString()}`;
-
-    const image = await QRCode.toDataURL(url, {
-      type: "png",
-      width: 500,
-      margin: 2,
-    });
-
-    // set headers for file download
-    res.setHeader("Content-Type", "image/png");
-    res.setHeader("Content-Disposition", `attachment; filename="${filename}"`);
-
-    return res.send(image);
-  } catch (error) {
-    console.error("Error generating QR code:", error);
-    return res.status(500).json({ error: "Internal Server Error" });
-  } finally {
-    client.release();
-  }
 };
 
 export const getTables = async (req, res) => {
-  const client = await pool.connect();
-  try {
-    const { tableId } = req.params;
-    const table = await retrieveTableById(client, tableId);
-    if (!table) {
-      return res.status(404).json({ error: "Table not found" });
+    const client = await pool.connect();
+    try {
+        const { tableId } = req.params;
+        const table = await retrieveTableById(client, tableId);
+        if (!table) {
+            return res.status(404).json({ error: "Table not found" });
+        }
+        return res.json(table);
+    } catch (error) {
+        console.error("Error retrieving tables:", error);
+        return res.status(500).json({ error: "Internal Server Error" });
+    } finally {
+        client.release();
     }
-    return res.json(table);
-  } catch (error) {
-    console.error("Error retrieving tables:", error);
-    return res.status(500).json({ error: "Internal Server Error" });
-  } finally {
-    client.release();
-  }
 };
