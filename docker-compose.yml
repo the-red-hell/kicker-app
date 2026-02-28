@@ -1,54 +1,53 @@
 services:
-  # Database
-  db:
-    image: postgres:alpine
-    restart: always
-    ports:
-      - "5432:5432"
-    environment:
-      POSTGRES_USER: ${POSTGRES_USER}
-      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
-      POSTGRES_DB: ${POSTGRES_DB}
-    volumes:
-      - postgres-data:/var/lib/postgresql/data
-      - ./models/init/:/docker-entrypoint-initdb.d:ro
+    # Database
+    db:
+        image: postgres:alpine
+        restart: always
+        ports:
+            - "5432:5432"
+        environment:
+            POSTGRES_USER: ${POSTGRES_USER}
+            POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+            POSTGRES_DB: ${POSTGRES_DB}
+        volumes:
+            - postgres-data:/var/lib/postgresql/data
+            - ./models/init/:/docker-entrypoint-initdb.d:ro
 
-  # Express App
-  express-app:
-    build:
-      context: .
-    volumes:
-      - .:/usr/src/app
-      - /usr/src/app/node_modules
-    environment:
-      - PORT=${PORT}
-      - DB_HOST=db
-      - DB_USER=${POSTGRES_USER}
-      - DB_PASSWORD=${POSTGRES_PASSWORD}
-      - DB_NAME=${POSTGRES_DB}
-    depends_on:
-      - db
-    develop:
-      watch:
-        - action: sync
-          path: ./
-          target: /usr/src/app
-          ignore:
-            - node_modules/
-        - action: rebuild
-          path: package.json
+    # Express App
+    express-app:
+        build: .
+        volumes:
+            - .:/usr/src/app
+            - /usr/src/app/node_modules
+        environment:
+            - PORT=${PORT}
+            - DB_HOST=db
+            - DB_USER=${POSTGRES_USER}
+            - DB_PASSWORD=${POSTGRES_PASSWORD}
+            - DB_NAME=${POSTGRES_DB}
+        depends_on:
+            - db
+        develop:
+            watch:
+                - action: sync
+                  path: ./
+                  target: /usr/src/app
+                  ignore:
+                      - node_modules/
+                - action: rebuild
+                  path: package.json
 
-  # Nginx
-  nginx-server:
-    image: nginx:latest
-    ports:
-      - "8080:80"
-    volumes:
-      - ./nginx/default.conf:/etc/nginx/conf.d/default.conf:ro
-      - ./public:/usr/share/nginx/html/public:ro
-    depends_on:
-      - express-app
+    # Nginx
+    nginx-server:
+        image: nginx:latest
+        ports:
+            - "8080:80"
+        volumes:
+            - ./nginx/www.kicker-app.local:/etc/nginx/conf.d/default.conf:ro
+            - ./public:/usr/share/nginx/html/public:ro
+        depends_on:
+            - express-app
 
 # persistent volume for postgresql data
 volumes:
-  postgres-data:
+    postgres-data:
