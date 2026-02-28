@@ -1,5 +1,4 @@
 .container {
-    /* padding: 2vh; */
     gap: 10vw;
 
     display: flex;
@@ -72,6 +71,17 @@
 
     display: flex;
     justify-content: center;
+}
+
+.why-choose-us-container {
+    width: 90%;
+    gap: 3vh;
+
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+    flex-wrap: wrap;
 }
 
 .what-we-can-container {
