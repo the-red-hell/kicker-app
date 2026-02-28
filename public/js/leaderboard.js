@@ -7,7 +7,7 @@ document.addEventListener("DOMContentLoaded", async () => {
 
     places.forEach((place, index) => {
         const entry = data[index];
-        place.score.textContent = entry.winRate ? `${entry.winRate}%` : "0%";
+        place.score.textContent = `${entry.winRate ? entry.winRate + "%" : "0%"} / ${entry.totalVictories}`;
         place.name.textContent = entry.username;
         place.container.style.height = `calc(3rem + 1.5rem + 20px + ${entry.winRate / maxWinRate} * var(--first-place-size))`;
     });
