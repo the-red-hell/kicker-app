@@ -99,7 +99,7 @@ export const retrieveGoalsPerUserByGameId = async (client, gameId) => {
  *
  * @param {Client} client
  * @param {string} gameId
- * @returns array of teams that scored the goals in order, e.g. ["white", "black", "white"]
+ * @returns {Promise<Object>} the game with the updated last_goal_player_ids array
  */
 export const undoGoalInGame = async (client, gameId) => {
     // first, get the last scoring game_player

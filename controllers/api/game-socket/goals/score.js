@@ -46,6 +46,8 @@ const goalScored = async (io, socket, tableId) => {
 };
 
 /**
+ * handles the logic when a goal is scored
+ * if the goal was invalid it returns undefined, otherwise it returns the updated goals and if the game has ended
  *
  * @param {Server} io
  * @param {Client} client
@@ -66,7 +68,7 @@ async function handleGoalScored(client, io, socket, tableId) {
 
     // check if game is won
     const roomName = getRoomName(tableId);
-    if (await isGameWon(io, client, game.id, roomName))
+    if (await endGameIfWon(io, client, game.id, roomName))
         return {
             gameEnded: true,
         };
@@ -88,7 +90,16 @@ async function handleGoalScored(client, io, socket, tableId) {
     return { goals: updatedGoals, gameEnded: false };
 }
 
-async function isGameWon(io, client, gameId, roomName) {
+/**
+ * checks whether the game has been won; if so, it sets the game to ended and emits the gameOver event with the stats
+ *
+ * @param {Server} io
+ * @param {Client} client
+ * @param {string} gameId
+ * @param {string} roomName
+ * @returns  {Promise<boolean>}
+ */
+async function endGameIfWon(io, client, gameId, roomName) {
     const goals = await retrieveGoalsPerTeamByGameId(client, gameId);
 
     if (hasAnyTeamWon(goals)) {
