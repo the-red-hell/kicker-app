@@ -1,5 +1,5 @@
 .container {
-    gap: 10vw;
+    gap: 5vw;
 
     display: flex;
     flex-direction: column;
@@ -50,7 +50,7 @@
     width: 80vw;
     max-width: 600px;
 
-    font-size: xx-large;
+    font-size: 5vmin;
     font-weight: 900;
 
     display: flex;
@@ -73,7 +73,7 @@
     justify-content: center;
 }
 
-.why-choose-us-container {
+.our-offers-container {
     width: 90%;
     gap: 3vh;
 
