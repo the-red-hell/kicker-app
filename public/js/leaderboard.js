@@ -9,7 +9,7 @@ document.addEventListener("DOMContentLoaded", async () => {
         const entry = data[index];
         place.score.textContent = `${entry.winRate ? entry.winRate + "%" : "0%"} / ${entry.totalVictories}`;
         place.name.textContent = entry.username;
-        place.container.style.height = `calc(1.5rem + 20px + ${entry.winRate / maxWinRate} * var(--first-place-size))`;
+        place.container.style.height = `calc(2rem + 20px + ${entry.winRate / maxWinRate} * var(--first-place-size))`;
     });
 });
 
