@@ -34,6 +34,7 @@
     flex-direction: row;
     gap: 1vh;
     flex: 1;
+    align-items: center;
 }
 
 #story .box {
@@ -43,25 +44,18 @@
     padding: 1vh;
     border-radius: var(--radius-sm);
     box-shadow: var(--shadow-sm);
-    /* font-size: 1.2rem;
-    font-weight: bold; */
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: center;
     flex-grow: 1;
+    height: 40%;
 }
 
 #story .box .name {
     font-size: 1.4rem;
     font-weight: bold;
     margin-bottom: 0.5vh;
-}
-
-#story .box .nickname {
-    font-size: 1rem;
-    font-style: italic;
-    color: var(--color-text-muted);
 }
 
 @media screen and (max-width: 1200px) {
