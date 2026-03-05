@@ -1,7 +1,3 @@
-CREATE TYPE possible_positions AS ENUM ('offense', 'defense');
-CREATE TYPE possible_teams AS ENUM ('white', 'black');
-CREATE TYPE status AS ENUM ('waiting', 'active', 'ended');
-
 CREATE TABLE IF NOT EXISTS users (
     id SERIAL PRIMARY KEY,
     username VARCHAR(50) UNIQUE NOT NULL,
@@ -35,9 +31,6 @@ CREATE TABLE IF NOT EXISTS games (
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
--- only one active game per table
-CREATE UNIQUE INDEX IF NOT EXISTS unique_active_game_per_table ON games (table_id) WHERE status = 'active';
-
 -- M-N relationship between games and players
 CREATE TABLE IF NOT EXISTS game_players (
     id SERIAL PRIMARY KEY,
@@ -52,9 +45,6 @@ CREATE TABLE IF NOT EXISTS game_players (
     -- position/team is only taken by one person
     CONSTRAINT unique_position_per_game UNIQUE (game_id, position, team)
 );
-
--- faster retrieval of goals by game id
-CREATE INDEX IF NOT EXISTS idx_game_players_game_id ON game_players (game_id, goals);
 
 -- test data
 INSERT INTO tables (name, location) VALUES
