@@ -11,7 +11,7 @@ server {
     }
 
     location = /404 {
-        proxy_pass http://host.docker.internal:3000;
+        proxy_pass http://host.docker.internal:3000; # Change to http://express-app:3000 for in container usage
         proxy_intercept_errors off;
         proxy_http_version 1.1;
         proxy_set_header Host $host;
@@ -20,7 +20,7 @@ server {
     }
 
     location / {
-        proxy_pass http://host.docker.internal:3000;
+        proxy_pass http://host.docker.internal:3000; # Change to http://express-app:3000 for in container usage
         proxy_intercept_errors on; # for the 404 page
 
         proxy_http_version 1.1;
